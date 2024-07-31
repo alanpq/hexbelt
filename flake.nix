@@ -19,7 +19,10 @@
             overlays = [inputs.rust-overlay.overlays.default];
           }
        ));
-      rustToolchain = eachSystem (pkgs: pkgs.rust-bin.stable.latest);
+      rustToolchain = eachSystem (pkgs: (pkgs.rust-bin.stable.latest.default.override {
+        extensions = [ "rust-src" ];
+        targets = [ "wasm32-unknown-unknown" ];
+      }));
       treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
     in
     {
@@ -48,11 +51,12 @@
             nodePackages.typescript-language-server
             svelte-language-server
 
-            rustToolchain.${pkgs.system}.default
+            rustToolchain.${pkgs.system}
             rust-analyzer-unwrapped
             cargo
+            wasm-pack
           ];
-          RUST_SRC_PATH = "${rustToolchain.${pkgs.system}.rust-src}/lib/rustlib/src/rust/library";
+          RUST_SRC_PATH = "${rustToolchain.${pkgs.system}}/lib/rustlib/src/rust/library";
         };
       });
       formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
