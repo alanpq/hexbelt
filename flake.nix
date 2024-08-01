@@ -16,9 +16,10 @@
         system: f (
           import nixpkgs {
             inherit system;
-            overlays = [inputs.rust-overlay.overlays.default];
+            overlays = [ inputs.rust-overlay.overlays.default ];
           }
-       ));
+        )
+      );
       rustToolchain = eachSystem (pkgs: (pkgs.rust-bin.stable.latest.default.override {
         extensions = [ "rust-src" ];
         targets = [ "wasm32-unknown-unknown" ];
@@ -55,6 +56,7 @@
             rust-analyzer-unwrapped
             cargo
             wasm-pack
+            wabt
           ];
           RUST_SRC_PATH = "${rustToolchain.${pkgs.system}}/lib/rustlib/src/rust/library";
         };
