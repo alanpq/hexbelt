@@ -1,8 +1,11 @@
 <script lang="ts">
   import { open_wad, load_hashtables, WadTree } from "rust";
+  import Icon from "@iconify/svelte";
 
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
+
+  import * as stores from "$lib/stores";
 
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
@@ -14,20 +17,32 @@
 
   let wad: Writable<WadTree | null> = writable(null);
   let path: number[] = [];
+
+  let hashesLoaded = stores.hashtables();
 </script>
 
-<Input id="input" type="file" />
-<Button
-  on:click={async () => {
-    if (!input || !input.files || input.files.length < 1) return;
-    try {
-      $wad = await open_wad(input.files[0]);
-      console.log(Array.from($wad.children).map((i) => $wad?.get(i)));
-    } catch (e) {
-      console.error("failed to open wad: ", e);
-    }
-  }}
-/>
+<header class="flex items-center gap-1">
+  <Input id="input" type="file" class="flex-shrink w-min" />
+  <Button
+    disabled={!$hashesLoaded}
+    on:click={async () => {
+      if (!input || !input.files || input.files.length < 1) return;
+      try {
+        $wad = await open_wad(input.files[0]);
+        console.log(Array.from($wad.children).map((i) => $wad?.get(i)));
+      } catch (e) {
+        console.error("failed to open wad: ", e);
+      }
+    }}
+  >
+    Open Wad
+  </Button>
+  {#if !$hashesLoaded}
+    <Icon icon="fluent:spinner-ios-16-filled" class="h-5 w-5 animate-spin" />
+    <span class="text-muted-foreground text-sm">Loading hashtables...</span>
+  {/if}
+  <div class="flex flex-grow" />
+</header>
 
 {#if $wad}
   {@const view =
