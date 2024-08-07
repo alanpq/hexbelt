@@ -10,10 +10,7 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-# league-toolkit = {git = "https://github.com/LeagueToolkit/league-toolkit.git", branch = "alan/misc", features = [
-#   "wasm"
-# ]}
-league-toolkit = { path = "../../league-toolkit/crates/league-toolkit", default-features = false, features = [
+league-toolkit = { git = "https://github.com/LeagueToolkit/league-toolkit.git", branch = "alan/misc", default-features = false, features = [
   "wasm",
 ] }
 
