@@ -137,7 +137,6 @@ impl WadTree {
             };
 
             let component = component.to_string_lossy();
-            debug!("{component:?}");
             cur_path += &component;
 
             if let Some(existing) = self.path_lookup.get(&cur_path) {
