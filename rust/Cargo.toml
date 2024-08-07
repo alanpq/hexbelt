@@ -13,18 +13,26 @@ default = ["console_error_panic_hook"]
 # league-toolkit = {git = "https://github.com/LeagueToolkit/league-toolkit.git", branch = "alan/misc", features = [
 #   "wasm"
 # ]}
-league-toolkit = { path = "../../league-toolkit/crates/league-toolkit", features = [
+league-toolkit = { path = "../../league-toolkit/crates/league-toolkit", default-features = false, features = [
   "wasm",
 ] }
-
-zstd = { version = "*", features = ["wasm", "thin"] }
 
 serde = "1.0.130"
 serde_derive = "1.0.130"
 serde_json = "1.0.68"
 wasm-bindgen = { version = "0.2.63", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4"
-web-sys = { version = "0.3", features = ["Blob", "File", "FileReader"] }
+web-sys = { version = "0.3", features = [
+  "Blob",
+  "File",
+  "FileReader",
+  'Headers',
+  'Request',
+  'RequestInit',
+  'RequestMode',
+  'Response',
+  'Window',
+] }
 js-sys = { version = "0.3", features = [] }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
@@ -46,6 +54,8 @@ anyhow = "1.0.86"
 itertools = "0.13.0"
 tracing = "0.1.40"
 tsify-next = "0.5.3"
+tracing-subscriber = "0.3.18"
+tracing-log = "0.2.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"

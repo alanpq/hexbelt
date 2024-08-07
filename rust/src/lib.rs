@@ -2,6 +2,9 @@ pub mod league_file;
 pub mod utils;
 pub mod wad;
 
+use tracing_log::LogTracer;
+use tracing_subscriber::{layer::SubscriberExt as _, Registry};
+use tracing_wasm::{WASMLayer, WASMLayerConfigBuilder};
 use utils::set_panic_hook;
 use wad::*;
 use wasm_bindgen::prelude::*;
@@ -26,6 +29,9 @@ extern "C" {
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_u32(a: u32);
 
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_u8array(a: js_sys::Uint8Array);
+
     // Multiple arguments too!
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_many(a: &str, b: &str);
@@ -41,6 +47,8 @@ macro_rules! log{
 extern "C" {
     fn alert(s: String);
 }
+
+static mut HASHTABLE: Option<WadHashtable> = None;
 
 #[wasm_bindgen(js_name = "open_wad")]
 pub async fn open_wad(file: File) -> Result<WadTree, JsValue> {
@@ -66,13 +74,30 @@ pub async fn open_wad(file: File) -> Result<WadTree, JsValue> {
     let mut vec = vec![0; buffer.length() as _];
     buffer.copy_to(&mut vec[..]);
     log!("file opened!");
-    WadTree::new(vec).map_err(|e| format!("error: {e:?}").into())
+    // log_u8array(buffer);
+    Ok(WadTree::new(vec).unwrap()) //.map_err(|e| format!("error: {e:?}").into())
+}
+
+#[wasm_bindgen(js_name = "load_hashtables")]
+pub async fn load_hashtables() -> Result<(), JsValue> {
+    let mut table = WadHashtable::new();
+    table.add_from_gh().await?;
+    unsafe {
+        HASHTABLE.replace(table);
+    }
+    Ok(())
 }
 
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
     set_panic_hook();
-    tracing_wasm::set_as_global_default();
+
+    LogTracer::init().unwrap();
+    let layer_config = WASMLayerConfigBuilder::new()
+        .set_max_level(tracing::Level::TRACE)
+        .build();
+    tracing::subscriber::set_global_default(Registry::default().with(WASMLayer::new(layer_config)))
+        .expect("default global");
 
     Ok(())
 }
