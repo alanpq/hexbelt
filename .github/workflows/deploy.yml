@@ -4,6 +4,9 @@ on:
   push:
     branches: 'main'
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   build_site:
     runs-on: ubuntu-latest
@@ -22,10 +25,18 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          # Optional version of wasm-pack to install(eg. 'v0.9.1', 'latest')
+          version: 'latest'
+
       - name: Install dependencies
+        working-directory: ./app
         run: yarn install
 
       - name: build
+        working-directory: ./app
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
@@ -35,7 +46,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # this should match the `pages` option in your adapter-static options
-          path: 'build/'
+          path: 'app/build/'
 
   deploy:
     needs: build_site
