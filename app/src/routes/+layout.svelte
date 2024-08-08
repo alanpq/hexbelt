@@ -1,7 +1,5 @@
 <script lang="ts">
   import "../app.css";
-  import { ModeWatcher } from "mode-watcher";
-
   import { onMount, setContext } from "svelte";
   import init, { load_hashtables } from "rust";
   import { writable } from "svelte/store";
@@ -11,7 +9,11 @@
 
   import { routes } from "$lib/config";
 
+  import { ModeWatcher } from "mode-watcher";
+
   import * as Resizable from "$lib/components/ui/resizable";
+  import { Toaster } from "$lib/components/ui/sonner";
+  import { toast } from "svelte-sonner";
 
   let defaultLayout = (browser
     ? JSON.parse(localStorage.getItem("layout") || "0")
@@ -37,12 +39,21 @@
   };
 
   onMount(async () => {
-    await init();
+    try {
+      await init();
+    } catch (e) {
+      toast.error("Failed to load WASM module!", {
+        important: true,
+        description: `${e}`,
+      });
+      console.error("Failed to load WASM module:", e);
+    }
     load_hashtables().then(() => hashtables.set(true));
   });
 </script>
 
 <ModeWatcher />
+<Toaster richColors />
 
 <Resizable.PaneGroup
   direction="horizontal"

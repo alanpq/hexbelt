@@ -2328,6 +2328,11 @@ svelte-render@^2.0.1:
   dependencies:
     svelte-subscribe "^2.0.0"
 
+svelte-sonner@^0.3.27:
+  version "0.3.27"
+  resolved "https://registry.yarnpkg.com/svelte-sonner/-/svelte-sonner-0.3.27.tgz#e64c2a35de8b08e9f00038a4b30afe891fc45d2e"
+  integrity sha512-+PvbuePNTyTNCepCWqKcFeu+Lo27yYuwfSc7zJvrWjCRMJrWAmccPg3j7jO1W13QoN3TySXU5Trb956VBQiM5Q==
+
 svelte-subscribe@^2.0.0, svelte-subscribe@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/svelte-subscribe/-/svelte-subscribe-2.0.1.tgz#4464991235f85bed347c7423998c38426b123af3"
