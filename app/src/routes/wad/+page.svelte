@@ -5,6 +5,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import { Separator } from "$lib/components/ui/select";
+  import * as Breadcrumb from "$lib/components/ui/breadcrumb";
 
   import * as stores from "$lib/stores";
 
@@ -52,6 +53,37 @@
     (path.length == 0
       ? $wad.children
       : $wad.get(path[path.length - 1])?.children) ?? []}
+
+  <Breadcrumb.Root>
+    <Breadcrumb.List class="gap-0 sm:gap-0">
+      <Breadcrumb.Item>
+        <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
+          <button
+            {...attrs}
+            on:click|preventDefault={() => {
+              path = [];
+            }}>/</button
+          >
+        </Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      {#each path as c, i}
+        <Breadcrumb.Item>
+          <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
+            <button
+              {...attrs}
+              on:click|preventDefault={() => {
+                path = path.slice(0, i + 1);
+              }}>{$wad.get(c)?.name}</button
+            >
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        {#if i < path.length - 1}
+          <Breadcrumb.Separator />
+        {/if}
+      {/each}
+    </Breadcrumb.List>
+  </Breadcrumb.Root>
   <ul>
     {#if path.length > 0}
       <li>
