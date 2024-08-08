@@ -14,6 +14,9 @@ const config = {
 		adapter: adapter(),
 		paths: {
 			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
+		},
+		files: {
+			assets: 'static'
 		}
 	}
 };
