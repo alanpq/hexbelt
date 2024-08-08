@@ -6,6 +6,7 @@
   import Nav from "./nav.svelte";
 
   import { browser } from "$app/environment";
+  import { base } from "$app/paths";
 
   import { routes } from "$lib/config";
 
@@ -48,7 +49,7 @@
       });
       console.error("Failed to load WASM module:", e);
     }
-    load_hashtables().then(() => hashtables.set(true));
+    load_hashtables(base).then(() => hashtables.set(true));
   });
 </script>
 

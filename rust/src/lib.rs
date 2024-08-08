@@ -79,9 +79,9 @@ pub async fn open_wad(file: File) -> Result<WadTree, JsValue> {
 }
 
 #[wasm_bindgen(js_name = "load_hashtables")]
-pub async fn load_hashtables() -> Result<(), JsValue> {
+pub async fn load_hashtables(base: String) -> Result<(), JsValue> {
     let mut table = WadHashtable::new();
-    table.add_from_gh().await?;
+    table.add_from_gh(base).await?;
     unsafe {
         HASHTABLE.replace(table);
     }
