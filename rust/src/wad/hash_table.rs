@@ -30,7 +30,7 @@ impl WadHashtable {
         self.items.get(&path_hash).cloned()
     }
 
-    pub async fn add_from_gh(&mut self, base: String) -> Result<(), JsValue> {
+    pub async fn add_from_gh(&mut self, base: String) -> Result<usize, JsValue> {
         const FILES: [&str; 3] = ["hashes.game.txt.0", "hashes.game.txt.1", "hashes.lcu.txt"];
 
         info!("loading hash files...");
@@ -53,7 +53,7 @@ impl WadHashtable {
 
         self.is_loaded = true;
 
-        Ok(())
+        Ok(self.items.len())
     }
 
     pub async fn add_from_url(&mut self, url: String) -> Result<(), JsValue> {

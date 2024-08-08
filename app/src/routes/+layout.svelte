@@ -49,7 +49,25 @@
       });
       console.error("Failed to load WASM module:", e);
     }
-    load_hashtables(`${base}/hashes`).then(() => hashtables.set(true));
+    toast.info("Loading hashtables...", {
+      id: "hashtables",
+    });
+    load_hashtables(`${base}/hashes`).then((entries) => {
+      if (entries <= 0) {
+        toast.error(`Hashtables were empty! Could not load any hashes.`, {
+          id: "hashtables",
+        });
+      } else if (entries <= 1000) {
+        toast.warning(`Loaded ${entries.toLocaleString()} hashes?`, {
+          id: "hashtables",
+        });
+      } else {
+        toast.success(`Loaded ${entries.toLocaleString()} hashes!`, {
+          id: "hashtables",
+        });
+      }
+      hashtables.set(true);
+    });
   });
 </script>
 
