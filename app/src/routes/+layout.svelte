@@ -49,7 +49,7 @@
       });
       console.error("Failed to load WASM module:", e);
     }
-    load_hashtables(base).then(() => hashtables.set(true));
+    load_hashtables(`${base}/hashes`).then(() => hashtables.set(true));
   });
 </script>
 
