@@ -6,10 +6,12 @@ export type Route = {
   variant: "default" | "ghost";
 };
 
+import { base } from "$app/paths";
+
 export const routes: Route[] = [
   {
     title: "Wad Walker",
-    href: "/wad",
+    href: base + "/wad",
     label: "",
     icon: "mdi:file",
     variant: "default",
