@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { open_wad, WadTree } from "rust";
+  import { open_wad, WadTree, Item } from "rust";
   import Icon from "@iconify/svelte";
 
   import { Input } from "$lib/components/ui/input";
@@ -14,8 +14,9 @@
   import * as stores from "$lib/stores";
 
   import { onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
+  import { readable, writable, type Writable } from "svelte/store";
   import { toast } from "svelte-sonner";
+  import Table from "./Table.svelte";
   let input: HTMLInputElement | null = null;
 
   onMount(async () => {
@@ -23,7 +24,19 @@
   });
 
   let wad: Writable<WadTree | null> = writable(null);
-  let path: number[] = [];
+  let path = writable<number[]>([]);
+
+  let view = writable<Item[]>([]);
+  path.subscribe((path) => {
+    if (!$wad) return;
+    $view = (
+      $path.length == 0
+        ? Array.from($wad.children)
+        : Array.from($wad.get($path[$path.length - 1])?.children ?? [])
+    )
+      .map((i) => $wad?.get(i))
+      .filter((c) => !!c);
+  });
 
   let hashesLoaded = stores.hashtables();
 </script>
@@ -38,6 +51,7 @@
         try {
           $wad = await open_wad(input.files[0]);
           console.log(Array.from($wad.children).map((i) => $wad?.get(i)));
+          $path = [];
         } catch (e) {
           console.error("failed to open wad: ", e);
         }
@@ -55,11 +69,6 @@
   <Separator />
 
   {#if $wad}
-    {@const view =
-      (path.length == 0
-        ? $wad.children
-        : $wad.get(path[path.length - 1])?.children) ?? []}
-
     <Breadcrumb.Root>
       <Breadcrumb.List class="gap-0 sm:gap-0">
         <Breadcrumb.Item>
@@ -67,24 +76,24 @@
             <button
               {...attrs}
               on:click|preventDefault={() => {
-                path = [];
+                $path = [];
               }}>/</button
             >
           </Breadcrumb.Link>
         </Breadcrumb.Item>
         <Breadcrumb.Separator />
-        {#each path as c, i}
+        {#each $path as c, i}
           <Breadcrumb.Item>
             <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
               <button
                 {...attrs}
                 on:click|preventDefault={() => {
-                  path = path.slice(0, i + 1);
+                  $path = $path.slice(0, i + 1);
                 }}>{$wad.get(c)?.name}</button
               >
             </Breadcrumb.Link>
           </Breadcrumb.Item>
-          {#if i < path.length - 1}
+          {#if i < $path.length - 1}
             <Breadcrumb.Separator />
           {/if}
         {/each}
@@ -92,50 +101,7 @@
     </Breadcrumb.Root>
 
     <ScrollArea class="rounded-md h-full">
-      <ul class="pb-5">
-        <li>
-          <ListItem
-            icon="mdi:folder-arrow-up"
-            disabled={path.length == 0}
-            on:click={() => {
-              path.pop();
-              path = path;
-            }}>..</ListItem
-          >
-        </li>
-        {#each view as i}
-          {@const child = $wad.get(i)}
-          {#if child}
-            <li>
-              <WadEntry
-                {child}
-                on:click={() => {
-                  if (child.is_dir()) {
-                    path = [...path, i];
-                  }
-                }}
-                on:download={(e) => {
-                  try {
-                    if (!$wad) throw "Wad tree is null!";
-                    const data = $wad.load_chunk_data(i);
-                    const url = URL.createObjectURL(new Blob([data.buffer]));
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.download = child.name;
-                    link.click();
-                  } catch (e) {
-                    console.error("Failed to download file", e);
-                    toast.error(`Failed to download file - ${e}`);
-                  }
-                  e.detail(); // tell the WadEntry we finished downloading
-                  e.preventDefault();
-                }}
-                download={child.is_file()}
-              />
-            </li>
-          {/if}
-        {/each}
-      </ul>
+      <Table wad={$wad} {path} data={view} />
     </ScrollArea>
   {/if}
 </main>

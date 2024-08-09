@@ -166,9 +166,11 @@ impl WadTree {
 
             let idx = self.item_storage.len();
             self.item_storage.push(Item {
+                id: idx,
                 name: component.into(),
                 children: None,
                 path_hash: chunk.path_hash,
+                size: chunk.uncompressed_size,
             });
 
             self.path_lookup.insert(cur_path.clone(), idx);

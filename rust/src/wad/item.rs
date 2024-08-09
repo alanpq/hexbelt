@@ -17,10 +17,12 @@ use super::WadTree;
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[wasm_bindgen]
 pub struct Item {
+    pub id: usize,
     #[wasm_bindgen(getter_with_clone)]
     pub name: String,
     #[wasm_bindgen(getter_with_clone)]
     pub children: Option<Vec<usize>>,
+    pub size: usize,
 
     pub(crate) path_hash: u64,
 }
