@@ -92,17 +92,16 @@
 
     <ScrollArea class="rounded-md h-full">
       <ul class="pb-5">
-        {#if path.length > 0}
-          <li>
-            <ListItem
-              icon="mdi:folder-arrow-up"
-              on:click={() => {
-                path.pop();
-                path = path;
-              }}>..</ListItem
-            >
-          </li>
-        {/if}
+        <li>
+          <ListItem
+            icon="mdi:folder-arrow-up"
+            disabled={path.length == 0}
+            on:click={() => {
+              path.pop();
+              path = path;
+            }}>..</ListItem
+          >
+        </li>
         {#each view as i}
           {@const child = $wad.get(i)}
           {#if child}
