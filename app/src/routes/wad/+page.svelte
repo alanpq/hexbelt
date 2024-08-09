@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { open_wad, load_hashtables, WadTree } from "rust";
+  import { open_wad, WadTree } from "rust";
   import Icon from "@iconify/svelte";
 
   import { Input } from "$lib/components/ui/input";
@@ -7,6 +7,9 @@
   import { Separator } from "$lib/components/ui/select";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
   import * as Breadcrumb from "$lib/components/ui/breadcrumb";
+
+  import WadEntry from "./WadEntry.svelte";
+  import ListItem from "./ListItem.svelte";
 
   import * as stores from "$lib/stores";
 
@@ -20,27 +23,6 @@
 
   let wad: Writable<WadTree | null> = writable(null);
   let path: number[] = [];
-
-  const ext_icons: Record<string, string> = {
-    anm: "material-symbols:animation",
-    bin: "mdi:file",
-    bnk: "mdi:file",
-    dds: "mdi:image",
-    jpg: "mdi:image",
-    luaobj: "mdi:file",
-    mapgeo: "mdi:file",
-    png: "mdi:image",
-    preload: "mdi:file",
-    scb: "mdi:cube-outline",
-    sco: "mdi:cube-outline",
-    skl: "mdi:skull",
-    skn: "ion:body",
-    stringtable: "mdi:text",
-    svg: "ph:file-svg",
-    tex: "mdi:image",
-    wgeo: "mdi:file",
-    wpk: "mdi:file",
-  };
 
   let hashesLoaded = stores.hashtables();
 </script>
@@ -112,39 +94,28 @@
       <ul class="pb-5">
         {#if path.length > 0}
           <li>
-            <button
-              class="w-full p-2 text-left hover:bg-white/10 rounded-md"
+            <ListItem
               on:click={() => {
                 path.pop();
                 path = path;
-              }}
-              >..
-            </button>
+              }}>..</ListItem
+            >
           </li>
         {/if}
         {#each view as i}
           {@const child = $wad.get(i)}
-          {@const ext = child?.name.split(".").at(-1)}
-          <li>
-            <button
-              class="w-full p-2 text-left hover:bg-white/10 flex items-center gap-1 rounded-md"
-              on:click={() => {
-                if (child?.is_dir()) {
-                  path.push(i);
-                  path = path;
-                }
-              }}
-            >
-              <Icon
-                class="mt-1 w-4 h-4"
-                icon={(ext && ext_icons[ext]) ||
-                  (child?.children?.length ?? 0 > 0
-                    ? "mdi:folder"
-                    : "mdi:file")}
+          {#if child}
+            <li>
+              <WadEntry
+                {child}
+                on:click={() => {
+                  if (child.is_dir()) {
+                    path = [...path, i];
+                  }
+                }}
               />
-              {child?.name}
-            </button>
-          </li>
+            </li>
+          {/if}
         {/each}
       </ul>
     </ScrollArea>
