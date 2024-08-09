@@ -4,13 +4,19 @@
   import { createEventDispatcher } from "svelte";
   import Icon from "@iconify/svelte";
   import ListItem from "./ListItem.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import Spinner from "$lib/components/Spinner.svelte";
 
   export let child: Item;
+  export let download: boolean = false;
   const dispatch = createEventDispatcher<{
     click: void;
+    download: () => void;
   }>();
 
   $: ext = child.name.split(".").at(-1);
+
+  let downloading = false;
 
   const ext_icons: Record<string, string> = {
     anm: "material-symbols:animation",
@@ -39,5 +45,23 @@
     (child.children?.length ?? 0 > 0 ? "mdi:folder" : "mdi:file")}
   on:click={() => dispatch("click")}
 >
-  {child?.name}
+  <span class="flex-grow">{child?.name}</span>
+  {#if download}
+    <Button
+      class="w-6 h-6 p-0"
+      variant="ghost"
+      on:click={() => {
+        downloading = true;
+        dispatch("download", () => {
+          downloading = false;
+        });
+      }}
+    >
+      {#if downloading}
+        <Spinner class="w-4 h-4" />
+      {:else}
+        <Icon class="w-4 h-4" icon="mdi-download" />
+      {/if}
+    </Button>
+  {/if}
 </ListItem>

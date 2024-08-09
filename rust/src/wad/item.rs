@@ -21,6 +21,8 @@ pub struct Item {
     pub name: String,
     #[wasm_bindgen(getter_with_clone)]
     pub children: Option<Vec<usize>>,
+
+    pub(crate) path_hash: u64,
 }
 
 #[wasm_bindgen]

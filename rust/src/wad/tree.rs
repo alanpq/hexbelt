@@ -60,6 +60,7 @@ pub struct WadTree {
     pub children: Vec<usize>,
     item_storage: Vec<Item>,
     path_lookup: HashMap<String, usize>,
+    wad: Option<Wad<Cursor<Vec<u8>>>>,
 }
 
 #[wasm_bindgen]
@@ -70,6 +71,7 @@ impl WadTree {
             children: Vec::new(),
             item_storage: Vec::new(),
             path_lookup: HashMap::new(),
+            wad: None,
         };
 
         let (mut decoder, chunks) = wad.decode();
@@ -115,12 +117,30 @@ impl WadTree {
                 .children
                 .replace(children);
         }
-
+        tree.wad.replace(wad);
         Ok(tree)
     }
 
     pub fn get(&self, idx: usize) -> Option<Item> {
         self.item_storage.get(idx).cloned()
+    }
+
+    pub fn load_chunk_data(&mut self, idx: usize) -> Result<Box<[u8]>, JsValue> {
+        let item = self
+            .get(idx)
+            .ok_or_else(|| "Item does not exist!".to_string())?;
+
+        let (mut decoder, chunks) = self.wad.as_mut().unwrap().decode();
+
+        let data = decoder
+            .load_chunk_decompressed(
+                chunks
+                    .get(&item.path_hash)
+                    .ok_or_else(|| "Could not find Wad chunk for item!".to_string())?,
+            )
+            .map_err(|e| format!("Could not load chunk - {e:?}"))?;
+
+        Ok(data)
     }
 
     fn push_chunk(&mut self, chunk: &WadChunk, path: impl AsRef<Path>) -> Result<(), WadTreeError> {
@@ -148,6 +168,7 @@ impl WadTree {
             self.item_storage.push(Item {
                 name: component.into(),
                 children: None,
+                path_hash: chunk.path_hash,
             });
 
             self.path_lookup.insert(cur_path.clone(), idx);

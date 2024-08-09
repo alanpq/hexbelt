@@ -15,6 +15,7 @@
 
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
+  import { toast } from "svelte-sonner";
   let input: HTMLInputElement | null = null;
 
   onMount(async () => {
@@ -113,6 +114,23 @@
                     path = [...path, i];
                   }
                 }}
+                on:download={(e) => {
+                  try {
+                    if (!$wad) throw "Wad tree is null!";
+                    const data = $wad.load_chunk_data(i);
+                    const url = URL.createObjectURL(new Blob([data.buffer]));
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = child.name;
+                    link.click();
+                  } catch (e) {
+                    console.error("Failed to download file", e);
+                    toast.error(`Failed to download file - ${e}`);
+                  }
+                  e.detail(); // tell the WadEntry we finished downloading
+                  e.preventDefault();
+                }}
+                download={child.is_file()}
               />
             </li>
           {/if}
