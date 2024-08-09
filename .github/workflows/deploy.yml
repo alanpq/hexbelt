@@ -22,6 +22,7 @@ jobs:
 
       - name: Setup NodeJS 20.x
         uses: actions/setup-node@v4
+        working-directory: ./app
         with:
           node-version: "20.x"
           cache: "yarn"
