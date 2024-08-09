@@ -95,6 +95,7 @@
         {#if path.length > 0}
           <li>
             <ListItem
+              icon="mdi:folder-arrow-up"
               on:click={() => {
                 path.pop();
                 path = path;

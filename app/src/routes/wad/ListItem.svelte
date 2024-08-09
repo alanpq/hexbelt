@@ -13,7 +13,7 @@
   on:click={() => dispatch("click")}
 >
   {#if icon}
-    <Icon class="mt-1 w-4 h-4" {icon} />
+    <Icon class="mt-[1px] w-5 h-5" {icon} />
   {/if}
   <slot />
 </button>
