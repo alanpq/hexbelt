@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: 'main'
+    branches: "main"
 
 env:
   CARGO_TERM_COLOR: always
@@ -20,25 +20,26 @@ jobs:
       #   with:
       #     version: 8
 
-      - name: Install yarn/node
-        uses: DerYeger/yarn-setup-action@master
+      - name: Setup NodeJS 20.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20.x"
+          cache: "yarn"
 
       - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
         with:
           # Optional version of wasm-pack to install(eg. 'v0.9.1', 'latest')
-          version: 'latest'
+          version: "latest"
 
       - name: Install dependencies
         working-directory: ./app
-        run: yarn install
+        run: yarn install --immutable
 
       - name: build
         working-directory: ./app
         env:
-          BASE_PATH: '/${{ github.event.repository.name }}'
+          BASE_PATH: "/${{ github.event.repository.name }}"
         run: |
           yarn build
 
@@ -46,7 +47,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # this should match the `pages` option in your adapter-static options
-          path: 'app/build/'
+          path: "app/build/"
 
   deploy:
     needs: build_site
