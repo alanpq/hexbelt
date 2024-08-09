@@ -15,11 +15,12 @@
   import * as Resizable from "$lib/components/ui/resizable";
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
+  import { cn } from "$lib/utils";
 
   let defaultLayout = (browser
     ? JSON.parse(localStorage.getItem("layout") || "0")
     : null) || [265, 440];
-  let navCollapsedSize = 5;
+  let navCollapsedSize = 10;
 
   let hashtables = writable(false);
   setContext("hashtables", hashtables);
@@ -80,11 +81,12 @@
   class="h-full w-full items-stretch"
 >
   <Resizable.Pane
+    class={cn("min-w-min", isCollapsed && "max-w-max")}
     defaultSize={defaultLayout[0]}
     collapsedSize={navCollapsedSize}
     collapsible
-    minSize={15}
-    maxSize={50}
+    minSize={5}
+    maxSize={30}
     {onCollapse}
     {onExpand}
   >
