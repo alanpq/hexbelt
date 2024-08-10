@@ -46,7 +46,7 @@
 
             # Optionally, you can add yarn or pnpm for package management for node.
             # pkgs.nodePackages.pnpm
-            yarn
+            corepack
 
             nodePackages.typescript
             nodePackages.typescript-language-server
