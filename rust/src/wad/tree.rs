@@ -3,12 +3,11 @@ use itertools::Itertools;
 use std::{
     collections::HashMap,
     io::{Cursor, Read, Seek},
-    path::{self, Path, PathBuf},
+    path::{self, Path},
 };
 use thiserror::Error;
 
 use league_toolkit::core::wad::{Wad, WadChunk, WadDecoder, WadError};
-use tracing::debug;
 use wasm_bindgen::prelude::*;
 
 use crate::{
@@ -16,7 +15,7 @@ use crate::{
     HASHTABLE,
 };
 
-use super::{Item, WadHashtable};
+use super::Item;
 
 #[derive(Error, Debug)]
 pub enum WadTreeError {

@@ -1,11 +1,4 @@
-use anyhow::anyhow;
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::{BufRead, BufReader},
-    path::Path,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Mutex};
 use tracing::info;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
@@ -40,17 +33,6 @@ impl WadHashtable {
         }
         info!("loaded hash files! {} entries", self.items.len());
 
-        // info!("loading wad hasthables from dir: {:?}", dir.as_ref());
-
-        // for wad_hashtable_entry in WalkDir::new(dir).into_iter().filter_map(|x| x.ok()) {
-        //     if !wad_hashtable_entry.file_type().is_file() {
-        //         continue;
-        //     }
-
-        //     info!("loading wad hasthable: {:?}", wad_hashtable_entry.path());
-        //     self.add_from_file(&mut File::open(wad_hashtable_entry.path())?)?;
-        // }
-
         self.is_loaded = true;
 
         Ok(self.items.len())
@@ -58,7 +40,7 @@ impl WadHashtable {
 
     pub async fn add_from_url(&mut self, url: String) -> Result<(), JsValue> {
         // let reader = BufReader::new(file);
-        use web_sys::{Request, RequestInit, RequestMode, Response};
+        use web_sys::{Request, RequestInit, Response};
         let mut opts = RequestInit::new();
         opts.method("GET");
         // opts.mode(RequestMode::Cors);
@@ -68,11 +50,9 @@ impl WadHashtable {
         let window = web_sys::window().unwrap();
         let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
 
-        // `resp_value` is a `Response` object.
         assert!(resp_value.is_instance_of::<Response>());
         let resp: Response = resp_value.dyn_into().unwrap();
 
-        // Convert this other `Promise` into a rust `Future`.
         let text = JsFuture::from(resp.text()?).await?;
         let text = text.as_string().expect("response.text() must be string");
 
@@ -92,13 +72,6 @@ impl WadHashtable {
         }
 
         Ok(())
-    }
-
-    pub(crate) fn items(&self) -> &HashMap<u64, String> {
-        &self.items
-    }
-    pub(crate) fn items_mut(&mut self) -> &mut HashMap<u64, String> {
-        &mut self.items
     }
 }
 

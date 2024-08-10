@@ -1,18 +1,5 @@
 #![allow(non_snake_case)]
-
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::vec;
-use std::{collections::HashMap, path::Path};
-
-use js_sys::JsString;
-use league_toolkit::core::wad::WadChunk;
-use serde::{Deserialize, Serialize};
-use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
-use xxhash_rust::xxh3::xxh3_64;
-
-use super::WadTree;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[wasm_bindgen]

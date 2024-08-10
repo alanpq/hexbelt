@@ -105,7 +105,7 @@ impl LeagueFilePattern {
 }
 
 pub fn get_league_file_kind_from_extension(extension: impl AsRef<str>) -> LeagueFileKind {
-    if extension.as_ref().len() == 0 {
+    if extension.as_ref().is_empty() {
         return LeagueFileKind::Unknown;
     }
 
@@ -161,12 +161,12 @@ pub fn get_extension_from_league_file_kind(kind: LeagueFileKind) -> &'static str
     }
 }
 
-pub fn identify_league_file(data: &Box<[u8]>) -> LeagueFileKind {
+pub fn identify_league_file(data: &[u8]) -> LeagueFileKind {
     for magic_byte in LEAGUE_FILE_MAGIC_BYTES.iter() {
         if magic_byte.matches(data) {
             return magic_byte.kind;
         }
     }
 
-    return LeagueFileKind::Unknown;
+    LeagueFileKind::Unknown
 }
