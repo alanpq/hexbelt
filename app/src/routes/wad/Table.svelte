@@ -5,6 +5,7 @@
     Subscribe,
     createRender,
   } from "svelte-headless-table";
+  import { addSortBy } from "svelte-headless-table/plugins";
   import {
     derived,
     readable,
@@ -17,12 +18,17 @@
   import TableActions from "./TableActions.svelte";
   import Icon from "@iconify/svelte";
   import { cn } from "$lib/utils";
+  import { Button } from "$lib/components/ui/button";
 
   export let wad: WadTree;
   export let data: Readable<Item[]>;
   export let path: Writable<number[]>;
 
-  const table = createTable(data);
+  const table = createTable(data, {
+    sort: addSortBy({
+      disableMultiSort: true,
+    }),
+  });
 
   function humanFileSize(size: number) {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
@@ -54,6 +60,11 @@
     wpk: "mdi:file",
   };
 
+  const sort_icons = {
+    asc: "mdi:sort-ascending",
+    desc: "mdi:sort-descending",
+  } as const;
+
   const columns = table.createColumns([
     table.column({
       accessor: ({ children, name }) => ({
@@ -69,7 +80,13 @@
             (children > 0 ? "mdi:folder" : "mdi:file"),
           class: "w-4 h-4",
         }),
+      plugins: {
+        sort: {
+          disable: true,
+        },
+      },
     }),
+
     table.column({
       accessor: "name",
       header: "Name",
@@ -86,11 +103,19 @@
       cell: ({ value }) => {
         return createRender(TableActions, { item: value, wad });
       },
+      plugins: {
+        sort: {
+          disable: true,
+        },
+      },
     }),
   ]);
 
-  const { headerRows, pageRows, tableAttrs, tableBodyAttrs } =
+  const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
     table.createViewModel(columns);
+
+  const { sortKeys } = pluginStates.sort;
+  $: $sortKeys;
 </script>
 
 <div class="rounded-md w-full">
@@ -100,17 +125,35 @@
         <Subscribe rowAttrs={headerRow.attrs()}>
           <Table.Row>
             {#each headerRow.cells as cell (cell.id)}
-              <Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
+              <Subscribe
+                attrs={cell.attrs()}
+                let:attrs
+                props={cell.props()}
+                let:props
+              >
                 <Table.Head
                   {...attrs}
                   class={cn(
                     "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]",
-                    cell.id == "icon" || cell.id == "actions" ? "w-0" : null
+                    cell.id == "icon" || cell.id == "actions" ? "w-0" : null,
                   )}
                 >
                   {#if cell.id === "size"}
-                    <div class="text-right">
-                      <Render of={cell.render()} />
+                    {@const order = $sortKeys.find((v, i) => v.id == "size")}
+                    <div class="flex justify-end">
+                      <Button
+                        variant="ghost"
+                        class=""
+                        on:click={props.sort.toggle}
+                      >
+                        <Render of={cell.render()} />
+                        {#if order}
+                          <Icon
+                            icon={sort_icons[order.order]}
+                            class="ml-2 h-4 w-4"
+                          />
+                        {/if}
+                      </Button>
                     </div>
                   {:else}
                     <Render of={cell.render()} />
@@ -126,7 +169,7 @@
       <Table.Row
         class={cn(
           "cursor-pointer",
-          $path.length == 0 && "cursor-default text-muted-foreground"
+          $path.length == 0 && "cursor-default text-muted-foreground",
         )}
         on:click={() => {
           if ($path.length == 0) return;
@@ -144,7 +187,7 @@
           <Table.Row
             {...rowAttrs}
             class={cn(
-              row.isData() && row.original.is_dir() && "cursor-pointer"
+              row.isData() && row.original.is_dir() && "cursor-pointer",
             )}
             on:click={() => {
               if (row.isData() && row.original.is_dir()) {
