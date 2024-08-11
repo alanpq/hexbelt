@@ -4,13 +4,30 @@
   import { toast } from "svelte-sonner";
   import type { Writable } from "svelte/store";
 
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
   import { Button } from "$lib/components/ui/button";
   import Spinner from "$lib/components/Spinner.svelte";
+
+  import * as stores from "$lib/stores";
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
 
   export let wad: WadTree;
   export let item: Item;
 
+  let bin_src = stores.bin_src();
+
   let downloading = false;
+
+  const load_chunk = (id: number) => {
+    try {
+      return wad.load_chunk_data(item.id);
+    } catch (e) {
+      console.error("Failed to download file", e);
+      toast.error(`Failed to download file - ${e}`);
+      return null;
+    }
+  };
 </script>
 
 {#if item.is_file()}
@@ -19,17 +36,13 @@
     variant="ghost"
     on:click={() => {
       downloading = true;
-      try {
-        const data = wad.load_chunk_data(item.id);
-        const url = URL.createObjectURL(new Blob([data.buffer]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = item.name;
-        link.click();
-      } catch (e) {
-        console.error("Failed to download file", e);
-        toast.error(`Failed to download file - ${e}`);
-      }
+      const data = load_chunk(item.id);
+      if (!data) return;
+      const url = URL.createObjectURL(new Blob([data.buffer]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = item.name;
+      link.click();
       downloading = false;
     }}
   >
@@ -39,6 +52,31 @@
       <Icon class="w-4 h-4" icon="mdi-download" />
     {/if}
   </Button>
+  <DropdownMenu.Root>
+    <DropdownMenu.Trigger asChild let:builder>
+      <Button
+        variant="ghost"
+        builders={[builder]}
+        size="icon"
+        class="w-6 h-6 p-0"
+      >
+        <span class="sr-only">Open menu</span>
+        <Icon icon="lucide:ellipsis" class="h-4 w-4" />
+      </Button>
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content>
+      <DropdownMenu.Item
+        on:click={() => {
+          const data = load_chunk(item.id);
+          if (!data) return;
+          $bin_src = data;
+          goto(base + "/bin");
+        }}
+      >
+        Open in Bin Viewer
+      </DropdownMenu.Item>
+    </DropdownMenu.Content>
+  </DropdownMenu.Root>
 {:else}
   <div aria-hidden="true" class="w-6 h-6" />
 {/if}

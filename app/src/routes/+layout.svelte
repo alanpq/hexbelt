@@ -24,6 +24,7 @@
 
   let hashtables = writable(false);
   setContext("hashtables", hashtables);
+  setContext("bin_src", writable(null));
 
   let isCollapsed = browser ? !!localStorage.getItem("collapsed") : false;
 

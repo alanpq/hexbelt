@@ -1,11 +1,13 @@
 pub mod league_file;
+pub mod meta;
 pub mod utils;
 pub mod wad;
 
+pub use meta::Bin;
 use tracing_log::LogTracer;
 use tracing_subscriber::{layer::SubscriberExt as _, Registry};
 use tracing_wasm::{WASMLayer, WASMLayerConfigBuilder};
-use utils::set_panic_hook;
+use utils::{set_panic_hook, AsJSError};
 use wad::*;
 use wasm_bindgen::prelude::*;
 use web_sys::File;
@@ -50,8 +52,7 @@ extern "C" {
 
 static mut HASHTABLE: Option<WadHashtable> = None;
 
-#[wasm_bindgen(js_name = "open_wad")]
-pub async fn open_wad(file: File) -> Result<WadTree, JsValue> {
+async fn read_file(file: File) -> Result<Vec<u8>, JsValue> {
     let promise = js_sys::Promise::new(&mut move |res, _rej| {
         let file_reader = web_sys::FileReader::new().unwrap();
 
@@ -73,9 +74,17 @@ pub async fn open_wad(file: File) -> Result<WadTree, JsValue> {
     let buffer = js_sys::Uint8Array::new(&res);
     let mut vec = vec![0; buffer.length() as _];
     buffer.copy_to(&mut vec[..]);
-    log!("file opened!");
-    // log_u8array(buffer);
-    Ok(WadTree::new(vec).unwrap()) //.map_err(|e| format!("error: {e:?}").into())
+    Ok(vec)
+}
+
+#[wasm_bindgen(js_name = "open_wad")]
+pub async fn open_wad(file: File) -> Result<WadTree, JsValue> {
+    WadTree::new(read_file(file).await?).map_err(AsJSError::into_js_error)
+}
+
+#[wasm_bindgen(js_name = "open_bin")]
+pub async fn open_bin(file: File) -> Result<Bin, JsValue> {
+    Bin::from_bytes(&read_file(file).await?).map_err(AsJSError::into_js_error)
 }
 
 #[wasm_bindgen(js_name = "load_hashtables")]

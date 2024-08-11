@@ -11,8 +11,9 @@ default = ["console_error_panic_hook"]
 wee_alloc = ["dep:wee_alloc"]
 
 [dependencies]
-league-toolkit = { git = "https://github.com/LeagueToolkit/league-toolkit.git", branch = "alan/misc", default-features = false, features = [
-  "wasm",
+league-toolkit = { git = "https://github.com/LeagueToolkit/league-toolkit", default-features = false, features = [
+  "serde",
+  "rust_backends",
 ] }
 
 serde = "1.0.130"

@@ -17,11 +17,7 @@
   import { readable, writable, type Writable } from "svelte/store";
   import { toast } from "svelte-sonner";
   import Table from "./Table.svelte";
-  let input: HTMLInputElement | null = null;
-
-  onMount(async () => {
-    input = document.getElementById("input") as any;
-  });
+  import FilePicker from "$lib/components/FilePicker.svelte";
 
   let wad: Writable<WadTree | null> = writable(null);
   let path = writable<number[]>([]);
@@ -43,22 +39,20 @@
 
 <main class="h-full flex flex-col">
   <header class="flex items-center gap-1">
-    <Input id="input" type="file" class="flex-shrink w-min" />
-    <Button
+    <FilePicker
+      class="flex-shrink w-min"
       disabled={!$hashesLoaded}
-      on:click={async () => {
-        if (!input || !input.files || input.files.length < 1) return;
+      on:open={async ({ detail: files }) => {
         try {
-          $wad = await open_wad(input.files[0]);
+          $wad = await open_wad(files[0]);
           console.log(Array.from($wad.children).map((i) => $wad?.get(i)));
           $path = [];
         } catch (e) {
           console.error("failed to open wad: ", e);
+          toast.error(`Failed to open Wad! ${e}`);
         }
       }}
-    >
-      Open Wad
-    </Button>
+    />
     {#if !$hashesLoaded}
       <Icon icon="fluent:spinner-ios-16-filled" class="h-5 w-5 animate-spin" />
       <span class="text-muted-foreground text-sm">Loading hashtables...</span>
