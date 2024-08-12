@@ -14,7 +14,7 @@
 
   let data = writable<BinEntry[]>([]);
 
-  const make_list = (bin: Bin, node: TreeNode): BinEntry => {
+  const make_entry = (bin: Bin, node: TreeNode): BinEntry => {
     if (node.kind == "Namespace") {
       return {
         name: node.value[0],
@@ -23,7 +23,9 @@
           .sort((a, b) => {
             return a[0].localeCompare(b[0]);
           })
-          .map(([_, n]) => make_list(bin, n)),
+          .map(([_, n]) => {
+            return make_entry(bin, n);
+          }),
       };
     }
     return bin.data.objects[node.value[1]];
@@ -39,7 +41,7 @@
       toast.error(`${e}`);
     }
   }
-  $: $bin && data.set(make_list($bin, $bin.data.tree).children);
+  $: $bin && data.set(make_entry($bin, $bin.data.tree).children);
 </script>
 
 <header>

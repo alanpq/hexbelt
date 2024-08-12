@@ -41,14 +41,14 @@
 
   const columns = table.createColumns([
     table.column({
-      accessor: "name",
+      accessor: (value) => value,
       id: "name",
       header: "Name",
       cell: ({ row, value }, { pluginStates }) => {
         const { isExpanded, canExpand, isAllSubRowsExpanded } =
           pluginStates.expand.getRowState(row);
         return createRender(ExpandIndicator, {
-          name: value,
+          value,
           depth: row.depth,
           isExpanded,
           canExpand,
@@ -143,9 +143,11 @@
                   `}
                   >
                     {#if cell.id === "name"}
-                      <div class={cn("font-medium")}>
-                        <Render of={cell.render()} />
-                      </div>
+                      {#if !(cell.isData() && !cell.value)}
+                        <div class={cn("font-medium")}>
+                          <Render of={cell.render()} />
+                        </div>
+                      {/if}
                     {:else}
                       <Render of={cell.render()} />
                     {/if}

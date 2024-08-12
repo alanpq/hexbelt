@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import { cn } from "$lib/utils";
   import Icon from "@iconify/svelte";
 
-  export let name;
+  import type { BinEntry } from "rust";
+  import { get_type } from "./types";
+
+  export let value: BinEntry;
   export let isExpanded;
   export let canExpand;
   export let isAllSubRowsExpanded;
@@ -20,5 +23,12 @@
     icon={$isExpanded ? "lets-icons:expand-down" : "lets-icons:expand-right"}
     class={cn("w-4 h-4", !$canExpand && "opacity-0")}
   />
-  <span>{name}</span>
+  {#if value.value.kind == "PropertyMapEntry" && "value" in value.value.value.key && !!value.value.value.key.value}
+    <svelte:component
+      this={get_type(value.value.value.key.kind)}
+      value={value.value.value.key}
+    />
+  {:else}
+    <span>{value.name}</span>
+  {/if}
 </Button>
