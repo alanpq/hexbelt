@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as stores from "$lib/stores";
 
-  import { Bin, open_bin, type BinEntry } from "rust";
+  import { Bin, open_bin, type BinEntry, type TreeNode } from "rust";
   import { toast } from "svelte-sonner";
 
   import FilePicker from "$lib/components/FilePicker.svelte";
@@ -14,8 +14,23 @@
 
   let data = writable<BinEntry[]>([]);
 
+  const make_list = (bin: Bin, node: TreeNode): BinEntry[] => {
+    if (node.kind == "Namespace") {
+      return [
+        {
+          name: node.value[0],
+          value: { kind: "Namespace" },
+          children: Object.values(node.value[1])
+            .map((n) => make_list(bin, n))
+            .flat(),
+        },
+      ];
+    }
+    return [bin.data.objects[node.value[1]]];
+  };
+
   $: bin = $bin_src && Bin.from_bytes($bin_src);
-  $: bin && data.set(bin.tree.objects);
+  $: bin && data.set(make_list(bin, bin.data.tree));
 </script>
 
 <header>

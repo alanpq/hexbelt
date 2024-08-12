@@ -14,13 +14,14 @@ use crate::{log_object, utils::AsJSError, BIN_FIELDS, BIN_PATHS};
 pub struct Bin {
     pub version: u32,
     #[wasm_bindgen(getter_with_clone)]
-    pub tree: Tree,
+    pub data: Data,
 }
 
 #[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct Tree {
-    pub objects: Vec<BinEntry>,
+pub struct Data {
+    pub tree: TreeNode,
+    pub objects: HashMap<u32, BinEntry>,
 }
 
 #[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
@@ -64,6 +65,7 @@ impl From<meta::BinProperty> for BinProperty {
 #[serde(tag = "kind", content = "value")]
 pub enum BinEntryValue {
     Object,
+    Namespace,
     PropertyJSValue(Value),
     PropertyNone,
     PropertyOptional(Option<Box<BinEntryValue>>),
@@ -150,7 +152,7 @@ impl BinEntryValue {
                 None => (BinEntryValue::PropertyOptional(None), None),
             },
             _ => {
-                tracing::debug!("raw js: {value:?}");
+                // tracing::debug!("raw js: {value:?}");
                 (
                     BinEntryValue::PropertyJSValue(serde_json::to_value(value).unwrap()),
                     None,
@@ -219,16 +221,83 @@ impl Bin {
     }
 }
 
-use gloo_utils::format::JsValueSerdeExt;
+#[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+#[serde(tag = "kind", content = "value")]
+pub enum TreeNode {
+    Namespace(String, HashMap<String, TreeNode>),
+    Object(String, u32),
+}
+
+impl TreeNode {
+    fn insert_object(&mut self, obj: &BinEntry, obj_hash: u32) {
+        let Some(name) = &obj.name else {
+            return;
+        };
+        tracing::debug!("PATH = {name}");
+        let components = name.split('/').collect_vec();
+        self.insert(&components, obj_hash);
+    }
+
+    fn insert(&mut self, path: &[&str], obj: u32) {
+        match path.split_first() {
+            Some((first, rest)) => match self {
+                Self::Namespace(_, children) => {
+                    let first = first.to_string();
+                    let child = children
+                        .entry(first.clone())
+                        .or_insert_with(|| match rest.len() {
+                            0 => Self::Object(first, obj),
+                            _ => Self::Namespace(first, HashMap::new()),
+                        });
+                    child.insert(rest, obj);
+                }
+                Self::Object(name, id) => {
+                    tracing::warn!("Cannot insert into a leaf node path: \n\npath = {path:?}\n\nself = {self:?}\n\nobj = {obj:?}");
+                }
+            },
+            None => {
+                tracing::debug!("called insert with no path left");
+            }
+        }
+    }
+}
+
 impl Bin {
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, ParseError> {
-        tracing::debug!("reading bin file ({} bytes)...", bytes.len());
-        let tree = BinTree::from_reader(&mut Cursor::new(bytes))?;
+        // tracing::debug!("reading bin file ({} bytes)...", bytes.len());
+        let bin = BinTree::from_reader(&mut Cursor::new(bytes))?;
+
+        let objects = bin
+            .objects
+            .into_iter()
+            .map(|(k, v)| (k, v.into()))
+            .collect::<HashMap<_, _>>();
+
+        let mut root = TreeNode::Namespace("<root>".into(), HashMap::new());
+        for (hash, obj) in objects.iter() {
+            root.insert_object(obj, *hash);
+        }
 
         Ok(Bin {
-            version: tree.version,
-            tree: Tree {
-                objects: tree.objects.into_values().map_into().collect(),
+            version: bin.version,
+
+            data: Data {
+                tree: root,
+                objects: objects
+                    .into_iter()
+                    .map(|(k, mut v)| {
+                        if let Some(name) = v.name.as_ref().and_then(|n| {
+                            n.rsplit_once('/').map(|(l, r)| match r.is_empty() {
+                                true => l.to_string(),
+                                false => r.to_string(),
+                            })
+                        }) {
+                            v.name.replace(name);
+                        }
+                        (k, v)
+                    })
+                    .collect(),
             },
         })
     }
