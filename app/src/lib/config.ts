@@ -17,8 +17,8 @@ export const routes: Route[] = [
     variant: "default",
   },
   {
-    title: "Something else",
-    href: "#",
+    title: "Bin Viewer",
+    href: base + "/bin",
     label: "",
     icon: "",
     variant: "default",

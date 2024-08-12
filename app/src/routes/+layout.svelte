@@ -1,8 +1,8 @@
 <script lang="ts">
   import "../app.css";
   import { onMount, setContext } from "svelte";
-  import init, { load_hashtables } from "rust";
-  import { writable } from "svelte/store";
+  import init, { load_wad_hashtables, load_bin_hashtables } from "rust";
+  import { writable, type Writable } from "svelte/store";
   import Nav from "./nav.svelte";
 
   import { browser } from "$app/environment";
@@ -22,8 +22,12 @@
     : null) || [265, 440];
   let navCollapsedSize = 10;
 
-  let hashtables = writable(false);
-  setContext("hashtables", hashtables);
+  setContext("bin_src", writable(null));
+
+  let wad_hashtables = writable(false);
+  setContext("wad_hashtables", wad_hashtables);
+  let bin_hashtables = writable(false);
+  setContext("bin_hashtables", bin_hashtables);
 
   let isCollapsed = browser ? !!localStorage.getItem("collapsed") : false;
 
@@ -50,25 +54,28 @@
       });
       console.error("Failed to load WASM module:", e);
     }
-    toast.info("Loading hashtables...", {
-      id: "hashtables",
-    });
-    load_hashtables(`${base}/hashes`).then((entries) => {
-      if (entries <= 0) {
-        toast.error(`Hashtables were empty! Could not load any hashes.`, {
-          id: "hashtables",
-        });
-      } else if (entries <= 1000) {
-        toast.warning(`Loaded ${entries.toLocaleString()} hashes?`, {
-          id: "hashtables",
-        });
-      } else {
-        toast.success(`Loaded ${entries.toLocaleString()} hashes!`, {
-          id: "hashtables",
-        });
-      }
-      hashtables.set(true);
-    });
+
+    const load_hashes = (
+      func: typeof load_bin_hashtables,
+      name: string,
+      store: Writable<boolean>,
+    ) => {
+      toast.info(`Loading ${name} hashtables...`, {});
+      func(`${base}/hashes`).then((count) => {
+        if (count <= 0) {
+          toast.error(
+            `${name} Hashtables were empty! Could not load any hashes.`,
+          );
+        } else if (count <= 1000) {
+          toast.warning(`Loaded ${count.toLocaleString()} ${name} hashes?`, {});
+        } else {
+          toast.success(`Loaded ${count.toLocaleString()} ${name} hashes!`, {});
+        }
+        store.set(true);
+      });
+    };
+    load_hashes(load_wad_hashtables, "Wad", wad_hashtables);
+    load_hashes(load_bin_hashtables, "Bin", bin_hashtables);
   });
 </script>
 

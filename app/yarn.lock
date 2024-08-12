@@ -1001,6 +1001,7 @@ __metadata:
     svelte-check: "npm:^3.6.0"
     svelte-headless-table: "npm:^0.18.2"
     svelte-radix: "npm:^1.1.0"
+    svelte-render: "npm:^2.0.1"
     svelte-sonner: "npm:^0.3.27"
     tailwind-merge: "npm:^2.4.0"
     tailwind-variants: "npm:^0.2.1"

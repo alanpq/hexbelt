@@ -12,7 +12,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     league_file::{get_extension_from_league_file_kind, identify_league_file, LeagueFileKind},
-    HASHTABLE,
+    WAD_HASHTABLE,
 };
 
 use super::Item;
@@ -77,7 +77,7 @@ impl WadTree {
 
         for (path_hash, chunk) in chunks.iter() {
             let path = unsafe {
-                HASHTABLE
+                WAD_HASHTABLE
                     .as_ref()
                     .and_then(|table| table.try_resolve_path(*path_hash))
                     .map(Ok)
