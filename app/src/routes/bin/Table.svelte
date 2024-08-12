@@ -24,6 +24,7 @@
   import { Button } from "$lib/components/ui/button";
   import ExpandIndicator from "./ExpandIndicator.svelte";
   import { types } from "./types";
+  import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
 
   export let bin: Bin;
   export let data: Readable<BinEntry[]>;
@@ -39,24 +40,21 @@
   });
 
   const columns = table.createColumns([
-    table.display({
-      id: "expanded",
-      header: "",
-      cell: ({ row }, { pluginStates }) => {
+    table.column({
+      accessor: "name",
+      id: "name",
+      header: "Name",
+      cell: ({ row, value }, { pluginStates }) => {
         const { isExpanded, canExpand, isAllSubRowsExpanded } =
           pluginStates.expand.getRowState(row);
         return createRender(ExpandIndicator, {
+          name: value,
           depth: row.depth,
           isExpanded,
           canExpand,
           isAllSubRowsExpanded,
         });
       },
-    }),
-    table.column({
-      accessor: "name",
-      id: "name",
-      header: "Name",
     }),
     table.column({
       id: "value",
@@ -77,82 +75,83 @@
   $: $sortKeys;
 </script>
 
-<div class="rounded-md w-full overflow-x-clip">
-  <Table.Root {...$tableAttrs} class="w-full  overflow-x-clip">
-    <Table.Header>
-      {#each $headerRows as headerRow}
-        <Subscribe rowAttrs={headerRow.attrs()}>
-          <Table.Row>
-            {#each headerRow.cells as cell (cell.id)}
-              <Subscribe
-                attrs={cell.attrs()}
-                let:attrs
-                props={cell.props()}
-                let:props
-              >
-                <Table.Head
-                  {...attrs}
-                  class={cn(
-                    "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden",
-                    cell.id == "name" && "w-[20ch]",
-                    cell.id == "expanded" ? "w-0" : null,
-                  )}
+<div class="rounded-md w-full h-full overflow-x-clip">
+  <ScrollArea class="w-full h-full">
+    <Table.Root {...$tableAttrs} class="w-full overflow-x-clip mb-14">
+      <Table.Header>
+        {#each $headerRows as headerRow}
+          <Subscribe rowAttrs={headerRow.attrs()}>
+            <Table.Row>
+              {#each headerRow.cells as cell (cell.id)}
+                <Subscribe
+                  attrs={cell.attrs()}
+                  let:attrs
+                  props={cell.props()}
+                  let:props
                 >
-                  {#if cell.id === "size"}
-                    <!--  -->
-                  {:else}
-                    <Render of={cell.render()} />
-                  {/if}
-                </Table.Head>
-              </Subscribe>
-            {/each}
-          </Table.Row>
-        </Subscribe>
-      {/each}
-    </Table.Header>
-    <Table.Body {...$tableBodyAttrs}>
-      {#each $pageRows as row (row.id)}
-        <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-          <Table.Row {...rowAttrs}>
-            {#each row.cells as cell (cell.id)}
-              {@const parent = row.parentRow}
-              {@const shift_left =
-                cell.id != "expanded" &&
-                cell.id != "name" &&
-                parent?.isData() &&
-                parent.original.value.kind == "PropertyContainer"}
-              <Subscribe
-                attrs={cell.attrs()}
-                let:attrs
-                props={cell.props()}
-                let:props
-              >
-                <Table.Cell
-                  {...attrs}
-                  class={cn(
-                    "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw] relative",
-                    shift_left && cell.id == "value" ? "z-50" : "z-10",
-                  )}
-                  style={`
+                  <Table.Head
+                    {...attrs}
+                    class={cn(
+                      "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden",
+                      cell.id == "name" && "w-[20ch]",
+                      cell.id == "expanded" ? "w-0" : null,
+                    )}
+                  >
+                    {#if cell.id === "size"}
+                      <!--  -->
+                    {:else}
+                      <Render of={cell.render()} />
+                    {/if}
+                  </Table.Head>
+                </Subscribe>
+              {/each}
+            </Table.Row>
+          </Subscribe>
+        {/each}
+      </Table.Header>
+      <Table.Body {...$tableBodyAttrs}>
+        {#each $pageRows as row (row.id)}
+          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+            <Table.Row {...rowAttrs}>
+              {#each row.cells as cell (cell.id)}
+                {@const parent = row.parentRow}
+                {@const shift_left =
+                  cell.id != "name" &&
+                  parent?.isData() &&
+                  parent.original.value.kind == "PropertyContainer"}
+                <Subscribe
+                  attrs={cell.attrs()}
+                  let:attrs
+                  props={cell.props()}
+                  let:props
+                >
+                  <Table.Cell
+                    {...attrs}
+                    class={cn(
+                      "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw] relative",
+                      shift_left && cell.id == "value" ? "z-50" : "z-10",
+                    )}
+                    style={`
                     transform: translateX(calc(
                       ${row.depth}rem
                       ${shift_left ? "-10ch" : ""}
                     ));
                   `}
-                >
-                  {#if cell.id === "name"}
-                    <div class={cn("font-medium")}>
+                  >
+                    {#if cell.id === "name"}
+                      <div class={cn("font-medium")}>
+                        <Render of={cell.render()} />
+                      </div>
+                    {:else}
                       <Render of={cell.render()} />
-                    </div>
-                  {:else}
-                    <Render of={cell.render()} />
-                  {/if}
-                </Table.Cell>
-              </Subscribe>
-            {/each}
-          </Table.Row>
-        </Subscribe>
-      {/each}
-    </Table.Body>
-  </Table.Root>
+                    {/if}
+                  </Table.Cell>
+                </Subscribe>
+              {/each}
+            </Table.Row>
+          </Subscribe>
+        {/each}
+      </Table.Body>
+    </Table.Root>
+  </ScrollArea>
 </div>
