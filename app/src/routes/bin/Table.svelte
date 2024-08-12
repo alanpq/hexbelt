@@ -111,10 +111,6 @@
             <Table.Row {...rowAttrs}>
               {#each row.cells as cell (cell.id)}
                 {@const parent = row.parentRow}
-                {@const shift_left =
-                  cell.id != "name" &&
-                  parent?.isData() &&
-                  parent.original.value.kind == "PropertyContainer"}
                 <Subscribe
                   attrs={cell.attrs()}
                   let:attrs
@@ -125,20 +121,11 @@
                     {...attrs}
                     class={cn(
                       "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw] relative",
-                      shift_left && cell.id == "value" ? "z-50" : "z-10",
                     )}
                     style={`
-                    transform: translateX(calc(
-                      ${row.depth}rem
-                      ${shift_left ? "-10ch" : ""}
-                    ));
+                    transform: translateX(${row.depth}rem);
                     ${
-                      cell.id == "value"
-                        ? `padding-right: calc(
-                      ${row.depth}rem
-                      ${shift_left ? "-10ch" : ""}
-                    )`
-                        : ""
+                      cell.id == "value" ? `padding-right: ${row.depth}rem` : ""
                     }
                   `}
                   >
