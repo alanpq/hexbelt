@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WadTree, Item } from "rust";
+  import { WadTree, Item, Bin } from "rust";
   import Icon from "@iconify/svelte";
   import { toast } from "svelte-sonner";
   import type { Writable } from "svelte/store";
@@ -15,7 +15,7 @@
   export let wad: WadTree;
   export let item: Item;
 
-  let bin_src = stores.bin_src();
+  let bin = stores.bin();
 
   let downloading = false;
 
@@ -69,7 +69,12 @@
         on:click={() => {
           const data = load_chunk(item.id);
           if (!data) return;
-          $bin_src = data;
+          try {
+            $bin = Bin.from_bytes(data);
+          } catch (e) {
+            console.error(e);
+            toast.error(`${e}`);
+          }
           goto(base + "/bin");
         }}
       >

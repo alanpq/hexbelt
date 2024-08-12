@@ -24,7 +24,7 @@
 
   setContext("wad", writable(null));
   setContext("wad_path", writable([]));
-  setContext("bin_src", writable(null));
+  setContext("bin", writable(null));
 
   let wad_hashtables = writable(false);
   setContext("wad_hashtables", wad_hashtables);

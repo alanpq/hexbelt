@@ -10,7 +10,7 @@
 
   let loaded = stores.bin_hashtables();
 
-  let bin_src = stores.bin_src();
+  let bin = stores.bin();
 
   let data = writable<BinEntry[]>([]);
 
@@ -28,19 +28,10 @@
           }),
       };
     }
-    return bin.data.objects[node.value[1]];
+    const entry = bin.data.objects[node.value[1]];
+    return entry;
   };
 
-  let bin = writable<Bin | null>(null);
-
-  $: {
-    try {
-      $bin = $bin_src && Bin.from_bytes($bin_src);
-    } catch (e) {
-      console.error(e);
-      toast.error(`${e}`);
-    }
-  }
   $: $bin && data.set(make_entry($bin, $bin.data.tree).children);
 </script>
 
@@ -51,7 +42,7 @@
     on:open={async ({ detail: files }) => {
       try {
         $bin = await open_bin(files[0]);
-        console.log({ bin: $bin });
+        console.log({ bin });
       } catch (e) {
         console.error(e);
         toast.error(`${e}`);
