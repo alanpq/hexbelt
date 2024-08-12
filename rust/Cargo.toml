@@ -55,6 +55,7 @@ tracing = "0.1.40"
 tsify-next = "0.5.3"
 tracing-subscriber = "0.3.18"
 tracing-log = "0.2.0"
+gloo-utils = "0.2.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"

@@ -32,6 +32,9 @@ extern "C" {
     fn log_u32(a: u32);
 
     #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_object(a: JsValue);
+
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_u8array(a: js_sys::Uint8Array);
 
     // Multiple arguments too!
