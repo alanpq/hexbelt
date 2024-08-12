@@ -132,6 +132,14 @@
                       ${row.depth}rem
                       ${shift_left ? "-10ch" : ""}
                     ));
+                    ${
+                      cell.id == "value"
+                        ? `padding-right: calc(
+                      ${row.depth}rem
+                      ${shift_left ? "-10ch" : ""}
+                    )`
+                        : ""
+                    }
                   `}
                   >
                     {#if cell.id === "name"}

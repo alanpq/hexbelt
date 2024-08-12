@@ -991,6 +991,7 @@ __metadata:
     autoprefixer: "npm:^10.4.19"
     bits-ui: "npm:^0.21.13"
     clsx: "npm:^2.1.1"
+    colord: "npm:^2.9.3"
     eslint: "npm:^9.0.0"
     eslint-plugin-svelte: "npm:^2.36.0"
     globals: "npm:^15.0.0"
@@ -998,8 +999,10 @@ __metadata:
     paneforge: "npm:^0.0.5"
     postcss: "npm:^8.4.38"
     svelte: "npm:^4.2.7"
+    svelte-awesome-color-picker: "npm:^3.1.3"
     svelte-check: "npm:^3.6.0"
     svelte-headless-table: "npm:^0.18.2"
+    svelte-portal: "npm:^2.2.1"
     svelte-radix: "npm:^1.1.0"
     svelte-render: "npm:^2.0.1"
     svelte-sonner: "npm:^0.3.27"
@@ -1296,6 +1299,13 @@ __metadata:
   version: 1.1.4
   resolution: "color-name@npm:1.1.4"
   checksum: 10c0/a1a3f914156960902f46f7f56bc62effc6c94e84b2cae157a526b1c1f74b677a47ec602bf68a61abfa2b42d15b7c5651c6dbe72a43af720bc588dff885b10f95
+  languageName: node
+  linkType: hard
+
+"colord@npm:^2.9.3":
+  version: 2.9.3
+  resolution: "colord@npm:2.9.3"
+  checksum: 10c0/9699e956894d8996b28c686afe8988720785f476f59335c80ce852ded76ab3ebe252703aec53d9bef54f6219aea6b960fb3d9a8300058a1d0c0d4026460cd110
   languageName: node
   linkType: hard
 
@@ -3651,6 +3661,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svelte-awesome-color-picker@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "svelte-awesome-color-picker@npm:3.1.3"
+  dependencies:
+    colord: "npm:^2.9.3"
+    svelte-awesome-slider: "npm:^1.1.1"
+  peerDependencies:
+    svelte: ^3.55.1 || ^4.0.0
+  checksum: 10c0/3e334be374e83bcb25a696bd2ca4664532be3a41c87f553327b1799d794e47cf83490eb5a6a43c992f6e97c7a9af3b38ad517c63f5116ff7631fdabf4328977a
+  languageName: node
+  linkType: hard
+
+"svelte-awesome-slider@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "svelte-awesome-slider@npm:1.1.1"
+  peerDependencies:
+    svelte: ^3.54.0 || ^4.0.0
+  checksum: 10c0/2892a9b1804606104d7c337b17a28707d9578233fc5c37216a41d62a2abb17dbc40b939c64c2c8a1182e341b39b755c10344f45066ee5d1a0421d4518dbdff5a
+  languageName: node
+  linkType: hard
+
 "svelte-check@npm:^3.6.0":
   version: 3.8.5
   resolution: "svelte-check@npm:3.8.5"
@@ -3715,6 +3746,13 @@ __metadata:
   peerDependencies:
     svelte: ^4.0.0
   checksum: 10c0/1c0c29119c187c46671ceee894a58f7287e05176219f339aced33e8dc94abe2dc374a299b6661b3cf45cf95a7e6ac054ebc35f3f3863116aec2d2ae3eeec8be6
+  languageName: node
+  linkType: hard
+
+"svelte-portal@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "svelte-portal@npm:2.2.1"
+  checksum: 10c0/95c66824edf174b9868d10ecb4a886da6ad938b13280c1d843de0e9f2f2580c3a71ae1ee695bc7920c111898c6444d8245e998dab7424dd70af9ba97c3585b95
   languageName: node
   linkType: hard
 

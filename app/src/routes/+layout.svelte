@@ -83,6 +83,7 @@
 
 <ModeWatcher />
 <Toaster richColors />
+<div id="color-portal" />
 
 <Resizable.PaneGroup
   direction="horizontal"
