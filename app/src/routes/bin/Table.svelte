@@ -93,15 +93,11 @@
                     {...attrs}
                     class={cn(
                       "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden",
-                      cell.id == "name" && "w-[20ch]",
+                      cell.id == "name" && "w-[20ch] pl-7",
                       cell.id == "expanded" ? "w-0" : null,
                     )}
                   >
-                    {#if cell.id === "size"}
-                      <!--  -->
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
+                    <Render of={cell.render()} />
                   </Table.Head>
                 </Subscribe>
               {/each}
