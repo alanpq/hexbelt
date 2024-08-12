@@ -25,6 +25,13 @@
   <span class="bg-secondary px-1 py-0.5 h-full text-lime-200">
     <span class="font-mono rounded-sm">{inner.value}</span>
   </span>
+{:else if inner.kind == "ObjectLink"}
+  <span class="bg-secondary px-1 py-0.5 h-full text-lime-200">
+    <span class="font-mono rounded-sm">{inner.value}</span>
+  </span>
+  <span class="px-1 py-0.5 h-full text-lime-200">
+    <span class="font-mono rounded-sm">(object link)</span>
+  </span>
 {:else}
   Unknown js '{inner.kind}' - {JSON.stringify(inner.value)}
 {/if}
