@@ -1,8 +1,10 @@
+pub mod hash_table;
 pub mod league_file;
 pub mod meta;
 pub mod utils;
 pub mod wad;
 
+use hash_table::HashTable;
 pub use meta::Bin;
 use tracing_log::LogTracer;
 use tracing_subscriber::{layer::SubscriberExt as _, Registry};
@@ -53,7 +55,9 @@ extern "C" {
     fn alert(s: String);
 }
 
-static mut HASHTABLE: Option<WadHashtable> = None;
+static mut WAD_HASHTABLE: Option<HashTable> = None;
+static mut BIN_FIELDS: Option<HashTable> = None;
+static mut BIN_PATHS: Option<HashTable> = None;
 
 async fn read_file(file: File) -> Result<Vec<u8>, JsValue> {
     let promise = js_sys::Promise::new(&mut move |res, _rej| {
@@ -90,13 +94,27 @@ pub async fn open_bin(file: File) -> Result<Bin, JsValue> {
     Bin::from_bytes(&read_file(file).await?).map_err(AsJSError::into_js_error)
 }
 
-#[wasm_bindgen(js_name = "load_hashtables")]
-pub async fn load_hashtables(base: String) -> Result<usize, JsValue> {
-    let mut table = WadHashtable::new();
-    let count = table.add_from_gh(base).await?;
-    unsafe {
-        HASHTABLE.replace(table);
-    }
+#[wasm_bindgen(js_name = "load_wad_hashtables")]
+pub async fn load_wad_hashtables(base: String) -> Result<usize, JsValue> {
+    let mut table = HashTable::new();
+
+    const FILES: [&str; 3] = ["hashes.game.txt.0", "hashes.game.txt.1", "hashes.lcu.txt"];
+    let count = table.load(base, FILES).await?;
+    unsafe { WAD_HASHTABLE.replace(table) };
+    Ok(count)
+}
+#[wasm_bindgen(js_name = "load_bin_hashtables")]
+pub async fn load_bin_hashtables(base: String) -> Result<usize, JsValue> {
+    let mut count = 0;
+
+    let mut table = HashTable::new();
+    count += table.load(&base, ["hashes.binfields.txt"]).await?;
+    unsafe { BIN_FIELDS.replace(table) };
+
+    let mut table = HashTable::new();
+    count += table.load(&base, ["hashes.binentries.txt"]).await?;
+    unsafe { BIN_PATHS.replace(table) };
+
     Ok(count)
 }
 

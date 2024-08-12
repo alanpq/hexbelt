@@ -34,7 +34,7 @@
       .filter((c) => !!c);
   });
 
-  let hashesLoaded = stores.hashtables();
+  let hashesLoaded = stores.wad_hashtables();
 </script>
 
 <main class="h-full flex flex-col">

@@ -6,14 +6,14 @@ use wasm_bindgen_futures::JsFuture;
 // use walkdir::WalkDir;
 
 #[derive(Debug, Clone, Default)]
-pub struct WadHashtable {
+pub struct HashTable {
     is_loaded: bool,
     items: HashMap<u64, String>,
 }
 
-impl WadHashtable {
+impl HashTable {
     pub fn new() -> Self {
-        WadHashtable {
+        HashTable {
             is_loaded: false,
             items: HashMap::default(),
         }
@@ -23,13 +23,18 @@ impl WadHashtable {
         self.items.get(&path_hash).cloned()
     }
 
-    pub async fn add_from_gh(&mut self, base: String) -> Result<usize, JsValue> {
-        const FILES: [&str; 3] = ["hashes.game.txt.0", "hashes.game.txt.1", "hashes.lcu.txt"];
+    pub async fn load<S: AsRef<str>, const N: usize>(
+        &mut self,
+        base: S,
+        files: [&'static str; N],
+    ) -> Result<usize, JsValue> {
+        let base = base.as_ref();
+        // const FILES: [&str; 3] = ["hashes.game.txt.0", "hashes.game.txt.1", "hashes.lcu.txt"];
 
         info!("loading hash files...");
 
-        for file in FILES {
-            let _ = self.add_from_url(format!("{base}/{file}")).await;
+        for file in files {
+            let _ = self.load_from_url(format!("{base}/{file}")).await;
         }
         info!("loaded hash files! {} entries", self.items.len());
 
@@ -38,7 +43,7 @@ impl WadHashtable {
         Ok(self.items.len())
     }
 
-    pub async fn add_from_url(&mut self, url: String) -> Result<(), JsValue> {
+    pub async fn load_from_url(&mut self, url: String) -> Result<(), JsValue> {
         // let reader = BufReader::new(file);
         use web_sys::{Request, RequestInit, Response};
         let mut opts = RequestInit::new();
@@ -75,4 +80,4 @@ impl WadHashtable {
     }
 }
 
-pub struct WadHashtableState(pub Mutex<WadHashtable>);
+pub struct WadHashtableState(pub Mutex<HashTable>);

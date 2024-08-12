@@ -8,6 +8,8 @@
   import Table from "./Table.svelte";
   import { writable } from "svelte/store";
 
+  let loaded = stores.bin_hashtables();
+
   let bin_src = stores.bin_src();
 
   let data = writable<BinEntry[]>([]);
@@ -19,6 +21,7 @@
 <header>
   <FilePicker
     class="flex-shrink w-min"
+    disabled={!$loaded}
     on:open={async ({ detail: files }) => {
       try {
         bin = await open_bin(files[0]);

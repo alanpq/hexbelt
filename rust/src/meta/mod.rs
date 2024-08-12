@@ -8,7 +8,7 @@ use serde_json::Value;
 use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
 
-use crate::{log_object, utils::AsJSError};
+use crate::{log_object, utils::AsJSError, BIN_FIELDS, BIN_PATHS};
 
 #[wasm_bindgen]
 pub struct Bin {
@@ -186,7 +186,11 @@ impl From<&meta::BinProperty> for BinEntry {
     fn from(prop: &meta::BinProperty) -> Self {
         let (value, children) = BinEntryValue::from_prop_value(&prop.value);
         Self {
-            name: Some(format!("{:#x}", prop.name_hash)),
+            name: Some(
+                unsafe { BIN_FIELDS.as_ref() }
+                    .and_then(|t| t.try_resolve_path(prop.name_hash as _))
+                    .unwrap_or_else(|| format!("{:#x}", prop.name_hash)),
+            ),
             value,
             children: children.unwrap_or_default(),
         }
@@ -195,7 +199,12 @@ impl From<&meta::BinProperty> for BinEntry {
 impl From<meta::BinTreeObject> for BinEntry {
     fn from(obj: meta::BinTreeObject) -> Self {
         Self {
-            name: Some(format!("{:#x}", obj.path_hash)),
+            // name: Some(format!("{:#x}", obj.path_hash)),
+            name: Some(
+                unsafe { BIN_PATHS.as_ref() }
+                    .and_then(|t| t.try_resolve_path(obj.path_hash as _))
+                    .unwrap_or_else(|| format!("{:#x}", obj.path_hash)),
+            ),
             value: BinEntryValue::Object,
             children: obj.properties.values().map_into().collect(),
         }
