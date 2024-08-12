@@ -23,11 +23,11 @@
   <Checkbox disabled value={inner.value} />
 {:else if inner.kind == "Hash"}
   <span class="bg-secondary px-1 py-0.5 h-full text-lime-200">
-    <span class="font-mono rounded-sm">{inner.value}</span>
+    <span class="font-mono rounded-sm">0x{inner.value.toString(16)}</span>
   </span>
 {:else if inner.kind == "ObjectLink"}
   <span class="bg-secondary px-1 py-0.5 h-full text-lime-200">
-    <span class="font-mono rounded-sm">{inner.value}</span>
+    <span class="font-mono rounded-sm">0x{inner.value.toString(16)}</span>
   </span>
   <span class="px-1 py-0.5 h-full text-lime-200">
     <span class="font-mono rounded-sm">(object link)</span>

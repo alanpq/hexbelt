@@ -186,7 +186,7 @@ impl From<&meta::BinProperty> for BinEntry {
     fn from(prop: &meta::BinProperty) -> Self {
         let (value, children) = BinEntryValue::from_prop_value(&prop.value);
         Self {
-            name: Some(prop.name_hash.to_string()),
+            name: Some(format!("{:#x}", prop.name_hash)),
             value,
             children: children.unwrap_or_default(),
         }
@@ -195,7 +195,7 @@ impl From<&meta::BinProperty> for BinEntry {
 impl From<meta::BinTreeObject> for BinEntry {
     fn from(obj: meta::BinTreeObject) -> Self {
         Self {
-            name: Some(obj.path_hash.to_string()),
+            name: Some(format!("{:#x}", obj.path_hash)),
             value: BinEntryValue::Object,
             children: obj.properties.values().map_into().collect(),
         }
