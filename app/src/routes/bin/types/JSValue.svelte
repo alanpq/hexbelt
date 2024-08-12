@@ -56,7 +56,7 @@
 {:else if is_vec(inner)}
   <span
     class={cn(
-      "grid gap-1 py-0.5 w-full h-full items-center grid-cols-[auto,auto,min-content]",
+      "grid gap-1 py-0.5 w-full h-full items-center grid-cols-[minmax(min-content,max-content),auto,min-content]",
       as_color && "grid-cols-[auto,min-content]",
     )}
   >
@@ -64,8 +64,8 @@
       <Color color={vec_to_color(inner.value)} />
     {:else}
       <div
-        class={"grid gap-1 w-30"}
-        style={`grid-template-columns: repeat(${inner.value.length}, 1fr)`}
+        class={"grid gap-1"}
+        style={`grid-template-columns: repeat(${inner.value.length}, minmax(auto, 12ch))`}
       >
         {#each inner.value as i}
           <Tooltip.Root>
@@ -74,7 +74,7 @@
                 <Input
                   type="text"
                   disabled
-                  class="bg-secondary px-1.5 text-ellipsis overflow-clip text-cyan-300 max-w-[12ch] h-5 font-mono rounded-sm"
+                  class="bg-secondary px-1.5 text-ellipsis overflow-clip text-cyan-300 h-5 font-mono rounded-sm"
                   value={i.toString().length < 4 ? i.toPrecision(4) : i}
                 />
               </div>
