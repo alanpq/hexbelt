@@ -14,23 +14,23 @@
 
   let data = writable<BinEntry[]>([]);
 
-  const make_list = (bin: Bin, node: TreeNode): BinEntry[] => {
+  const make_list = (bin: Bin, node: TreeNode): BinEntry => {
     if (node.kind == "Namespace") {
-      return [
-        {
-          name: node.value[0],
-          value: { kind: "Namespace" },
-          children: Object.values(node.value[1])
-            .map((n) => make_list(bin, n))
-            .flat(),
-        },
-      ];
+      return {
+        name: node.value[0],
+        value: { kind: "Namespace" },
+        children: Object.entries(node.value[1])
+          .sort((a, b) => {
+            return a[0].localeCompare(b[0]);
+          })
+          .map(([_, n]) => make_list(bin, n)),
+      };
     }
-    return [bin.data.objects[node.value[1]]];
+    return bin.data.objects[node.value[1]];
   };
 
   $: bin = $bin_src && Bin.from_bytes($bin_src);
-  $: bin && data.set(make_list(bin, bin.data.tree));
+  $: bin && data.set(make_list(bin, bin.data.tree).children);
 </script>
 
 <header>
