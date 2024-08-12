@@ -51,8 +51,8 @@
           console.error("failed to open wad: ", e);
           toast.error(`Failed to open Wad! ${e}`);
         }
-      }}
-    />
+      }}>Open Wad</FilePicker
+    >
     {#if !$hashesLoaded}
       <Icon icon="fluent:spinner-ios-16-filled" class="h-5 w-5 animate-spin" />
       <span class="text-muted-foreground text-sm">Loading hashtables...</span>

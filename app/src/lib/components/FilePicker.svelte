@@ -32,6 +32,6 @@
       dispatch("open", files);
     }}
   >
-    Open Wad
+    <slot />
   </Button>
 </section>
