@@ -22,6 +22,8 @@
     : null) || [265, 440];
   let navCollapsedSize = 10;
 
+  setContext("wad", writable(null));
+  setContext("wad_path", writable([]));
   setContext("bin_src", writable(null));
 
   let wad_hashtables = writable(false);

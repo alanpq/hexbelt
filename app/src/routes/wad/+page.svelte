@@ -19,8 +19,8 @@
   import Table from "./Table.svelte";
   import FilePicker from "$lib/components/FilePicker.svelte";
 
-  let wad: Writable<WadTree | null> = writable(null);
-  let path = writable<number[]>([]);
+  let wad = stores.wad();
+  let path = stores.wad_path();
 
   let view = writable<Item[]>([]);
   path.subscribe((path) => {
