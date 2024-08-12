@@ -29,8 +29,17 @@
     return bin.data.objects[node.value[1]];
   };
 
-  $: bin = $bin_src && Bin.from_bytes($bin_src);
-  $: bin && data.set(make_list(bin, bin.data.tree).children);
+  let bin = writable<Bin | null>(null);
+
+  $: {
+    try {
+      $bin = $bin_src && Bin.from_bytes($bin_src);
+    } catch (e) {
+      console.error(e);
+      toast.error(`${e}`);
+    }
+  }
+  $: $bin && data.set(make_list($bin, $bin.data.tree).children);
 </script>
 
 <header>
@@ -39,8 +48,8 @@
     disabled={!$loaded}
     on:open={async ({ detail: files }) => {
       try {
-        bin = await open_bin(files[0]);
-        console.log({ bin });
+        $bin = await open_bin(files[0]);
+        console.log({ bin: $bin });
       } catch (e) {
         console.error(e);
         toast.error(`${e}`);
@@ -48,6 +57,6 @@
     }}>Open Bin</FilePicker
   >
 </header>
-{#if bin}
-  <Table {bin} {data} />
+{#if $bin}
+  <Table bin={$bin} {data} />
 {/if}
