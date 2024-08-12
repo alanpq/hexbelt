@@ -88,9 +88,16 @@
       </span>
     {/if}
     {#if is_color(inner.value)}
-      <Toggle class="h-6 aspect-square p-0 mr-5" bind:pressed={as_color}>
-        <Icon icon="mdi:color" class="w-4 h-4 opacity-40" />
-      </Toggle>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild let:builder>
+          <div {...builder} use:builder.action>
+            <Toggle class="h-6 aspect-square p-0 mr-5" bind:pressed={as_color}>
+              <Icon icon="mdi:color" class="w-4 h-4 opacity-40" />
+            </Toggle>
+          </div>
+        </Tooltip.Trigger>
+        <Tooltip.Content>Interpret as colour</Tooltip.Content>
+      </Tooltip.Root>
     {/if}
   </span>
 {:else}
