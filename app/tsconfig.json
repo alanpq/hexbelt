@@ -10,7 +10,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"moduleResolution": "bundler",
-    "typeRoots": ["../rust/pkg/", "./node_modules/@types"]
+		"typeRoots": ["../rust/pkg/", "./node_modules/@types"]
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	// except $lib which is handled by https://kit.svelte.dev/docs/configuration#files

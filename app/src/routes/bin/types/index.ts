@@ -11,20 +11,22 @@ import Map from "./Map.svelte";
 import MapEntry from "./MapEntry.svelte";
 import Empty from "./Empty.svelte";
 
-export const types: { [K in BinEntryValue["kind"]]: Constructor<SvelteComponent> } = {
-  Object: Object,
-  Namespace: Empty,
-  PropertyJSValue: JsValue,
-  PropertyNone: Unknown,
-  PropertyContainer: Container,
-  PropertyUnorderedContainer: Container,
-  PropertyMap: Map,
-  PropertyMapEntry: MapEntry,
-  PropertyStruct: Struct,
-  PropertyEmbedded: Struct,
-  PropertyOptional: Optional,
+export const types: {
+	[K in BinEntryValue["kind"]]: Constructor<SvelteComponent>;
+} = {
+	Object: Object,
+	Namespace: Empty,
+	PropertyJSValue: JsValue,
+	PropertyNone: Unknown,
+	PropertyContainer: Container,
+	PropertyUnorderedContainer: Container,
+	PropertyMap: Map,
+	PropertyMapEntry: MapEntry,
+	PropertyStruct: Struct,
+	PropertyEmbedded: Struct,
+	PropertyOptional: Optional,
 };
 
 export const get_type = (k: unknown) => {
-  return types[k as BinEntryValue["kind"]] ?? Unknown;
-}
+	return types[k as BinEntryValue["kind"]] ?? Unknown;
+};
