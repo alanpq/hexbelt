@@ -13,14 +13,14 @@ export const routes: Route[] = [
     title: "Wad Walker",
     href: base + "/wad",
     label: "",
-    icon: "mdi:file",
+    icon: "mdi:files",
     variant: "default",
   },
   {
-    title: "Bin Viewer",
+    title: "Bin Peek",
     href: base + "/bin",
     label: "",
-    icon: "",
+    icon: "carbon:tree-view",
     variant: "default",
   },
 
