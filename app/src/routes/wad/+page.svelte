@@ -1,20 +1,14 @@
 <script lang="ts">
-  import { open_wad, WadTree, Item } from "rust";
+  import { open_wad, Item } from "rust";
   import Icon from "@iconify/svelte";
 
-  import { Input } from "$lib/components/ui/input";
-  import { Button } from "$lib/components/ui/button";
   import { Separator } from "$lib/components/ui/select";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
   import * as Breadcrumb from "$lib/components/ui/breadcrumb";
 
-  import WadEntry from "./WadEntry.svelte";
-  import ListItem from "./ListItem.svelte";
-
   import * as stores from "$lib/stores";
 
-  import { onMount } from "svelte";
-  import { readable, writable, type Writable } from "svelte/store";
+  import { writable } from "svelte/store";
   import { toast } from "svelte-sonner";
   import Table from "./Table.svelte";
   import FilePicker from "$lib/components/FilePicker.svelte";
@@ -26,9 +20,9 @@
   path.subscribe((path) => {
     if (!$wad) return;
     $view = (
-      $path.length == 0
+      path.length == 0
         ? Array.from($wad.children)
-        : Array.from($wad.get($path[$path.length - 1])?.children ?? [])
+        : Array.from($wad.get(path[path.length - 1])?.children ?? [])
     )
       .map((i) => $wad?.get(i))
       .filter((c) => !!c);
