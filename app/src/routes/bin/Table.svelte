@@ -77,6 +77,11 @@
 
 <div class="rounded-md w-full h-full overflow-x-clip">
   <ScrollArea class="w-full h-full">
+    <button
+      on:click={() => {
+        console.log({ bin });
+      }}>debug</button
+    >
     <Table.Root {...$tableAttrs} class="w-full overflow-x-clip mb-14">
       <Table.Header>
         {#each $headerRows as headerRow}

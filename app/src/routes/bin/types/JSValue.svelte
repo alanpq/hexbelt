@@ -29,7 +29,13 @@
 
 {#if inner.kind == "String"}
   <span class="bg-secondary px-1 py-0.5 h-full text-amber-500">
-    "<span class="font-mono rounded-sm">{inner.value}</span>"
+    "<input
+      class="font-mono rounded-sm"
+      value={inner.value}
+      on:change={(e) => {
+        value.value.value = e.currentTarget.value;
+      }}
+    />"
   </span>
 {:else if ["U", "I", "F"].indexOf(inner.kind[0]) != -1}
   <span class="bg-secondary px-1 py-0.5 h-full text-cyan-300">

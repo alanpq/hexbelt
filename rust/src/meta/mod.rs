@@ -141,7 +141,7 @@ impl BinEntryValue {
                 Some(v.0.properties.values().map_into().collect()),
             ),
 
-            meta::property::value::PropertyValueEnum::Optional(v) => match &v.0 {
+            meta::property::value::PropertyValueEnum::Optional(v) => match &v.1 {
                 Some(inner) => {
                     let (inner, children) = BinEntryValue::from_prop_value(inner);
                     (
