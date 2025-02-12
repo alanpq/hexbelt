@@ -1,6 +1,7 @@
 pub mod hash_table;
 pub mod league_file;
 pub mod meta;
+pub mod tex;
 pub mod utils;
 pub mod wad;
 

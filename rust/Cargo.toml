@@ -11,7 +11,7 @@ default = ["console_error_panic_hook"]
 wee_alloc = ["dep:wee_alloc"]
 
 [dependencies]
-league-toolkit = { git = "https://github.com/LeagueToolkit/league-toolkit", branch = "alan/feat/bin", default-features = false, features = [
+league-toolkit = { git = "https://github.com/LeagueToolkit/league-toolkit", branch = "alan/feat/texture", default-features = false, features = [
   "serde",
   "rust_backends",
 ] }
