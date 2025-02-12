@@ -56,6 +56,7 @@
           nodePackages.typescript
           nodePackages.typescript-language-server
           svelte-language-server
+          tailwindcss-language-server
 
           rustToolchain.${pkgs.system}
           rust-analyzer-unwrapped
