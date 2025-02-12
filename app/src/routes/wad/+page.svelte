@@ -21,7 +21,7 @@
 
   let selected: null | Item = null;
   let preview_canvas: null | HTMLCanvasElement = null;
-  let has_preview = false;
+  let has_preview: boolean | string = false;
 
   let view = writable<Item[]>([]);
   path.subscribe((path) => {
@@ -45,6 +45,21 @@
   const onLayoutChange = (sizes: number[]) => {
     if (!browser) return;
     localStorage.setItem("wad_layout", JSON.stringify(sizes));
+  };
+
+  const drawPreview = (id: number) => {
+    if (!preview_canvas || !$wad) return;
+    const data = $wad.load_chunk_data(id);
+    const tex = decode_texture(data);
+    const ctx = preview_canvas.getContext("2d");
+    preview_canvas.width = tex.width;
+    preview_canvas.height = tex.height;
+    has_preview = true;
+    ctx?.putImageData(
+      new ImageData(new Uint8ClampedArray(tex.data), tex.width, tex.height),
+      0,
+      0,
+    );
   };
 </script>
 
@@ -122,21 +137,11 @@
               if (selected !== null && selected.is_file()) {
                 const ext = selected.name.split(".").at(-1);
                 if (ext === "dds" || ext === "tex") {
-                  const data = $wad.load_chunk_data(selected.id);
-                  const tex = decode_texture(data);
-                  const ctx = preview_canvas.getContext("2d");
-                  preview_canvas.width = tex.width;
-                  preview_canvas.height = tex.height;
-                  has_preview = true;
-                  ctx?.putImageData(
-                    new ImageData(
-                      new Uint8ClampedArray(tex.data),
-                      tex.width,
-                      tex.height,
-                    ),
-                    0,
-                    0,
-                  );
+                  try {
+                    drawPreview(selected.id);
+                  } catch (e) {
+                    has_preview = `${e}`;
+                  }
                 }
               } else {
                 has_preview = false;
@@ -147,28 +152,35 @@
       </Resizable.Pane>
       <Resizable.Handle withHandle />
       <Resizable.Pane
-        class={cn("flex flex-col")}
+        class={cn("flex flex-col place-items-center justify-center")}
         defaultSize={defaultLayout[0]}
         collapsible
         minSize={5}
       >
-        <div
-          class="grid grid-cols-2 gap-1 grid-rows-[min-content,min-content] h-min justify-center content-center flex-grow w-full font-mono text-sm"
-        >
-          <canvas
-            bind:this={preview_canvas}
-            class={cn(
-              "w-full col-span-2 object-contain",
-              selected === null && "hidden",
-            )}
-          />
-          {#if selected && has_preview && preview_canvas}
-            <span class="pl-2">{selected.name}</span>
-            <span class="pr-2 text-right"
-              >{preview_canvas.width}x{preview_canvas.height}</span
-            >
-          {/if}
-        </div>
+        {#if typeof has_preview === "string"}
+          <section class="text-red-400 p-4">
+            <h1 class="font-bold">Failed to load preview:</h1>
+            {has_preview}
+          </section>
+        {:else}
+          <div
+            class="grid grid-cols-2 gap-1 grid-rows-[min-content,min-content] h-min justify-center content-center flex-grow w-full font-mono text-sm"
+          >
+            <canvas
+              bind:this={preview_canvas}
+              class={cn(
+                "w-full col-span-2 object-contain",
+                has_preview === true && "hidden",
+              )}
+            />
+            {#if selected && has_preview === true && preview_canvas}
+              <span class="pl-2">{selected.name}</span>
+              <span class="pr-2 text-right"
+                >{preview_canvas.width}x{preview_canvas.height}</span
+              >
+            {/if}
+          </div>
+        {/if}
       </Resizable.Pane>
     </Resizable.PaneGroup>
   {/if}
