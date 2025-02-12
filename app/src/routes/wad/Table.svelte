@@ -19,10 +19,14 @@
   import Icon from "@iconify/svelte";
   import { cn } from "$lib/utils";
   import { Button } from "$lib/components/ui/button";
+  import { createEventDispatcher } from "svelte";
 
   export let wad: WadTree;
   export let data: Readable<Item[]>;
   export let path: Writable<number[]>;
+  const dispatch = createEventDispatcher<{
+    select: number | null;
+  }>();
 
   const table = createTable(data, {
     sort: addSortBy({
@@ -111,6 +115,8 @@
     }),
   ]);
 
+  let selected: null | number = null;
+
   const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
     table.createViewModel(columns);
 
@@ -188,10 +194,15 @@
             {...rowAttrs}
             class={cn(
               row.isData() && row.original.is_dir() && "cursor-pointer",
+              row.isData() && row.original.id === selected && "bg-muted/80",
             )}
             on:click={() => {
-              if (row.isData() && row.original.is_dir()) {
+              if (!row.isData()) return;
+              if (row.original.is_dir()) {
                 $path = [...$path, row.original.id];
+              } else {
+                selected = row.original.id;
+                dispatch("select", selected);
               }
             }}
           >

@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { open_wad, Item } from "rust";
+  import { open_wad, decode_texture, Item } from "rust";
   import Icon from "@iconify/svelte";
 
   import { Separator } from "$lib/components/ui/select";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
   import * as Breadcrumb from "$lib/components/ui/breadcrumb";
+  import * as Resizable from "$lib/components/ui/resizable";
 
   import * as stores from "$lib/stores";
 
@@ -12,9 +13,15 @@
   import { toast } from "svelte-sonner";
   import Table from "./Table.svelte";
   import FilePicker from "$lib/components/FilePicker.svelte";
+  import { browser } from "$app/environment";
+  import { cn } from "$lib/utils";
 
   let wad = stores.wad();
   let path = stores.wad_path();
+
+  let selected: null | Item = null;
+  let preview_canvas: null | HTMLCanvasElement = null;
+  let has_preview = false;
 
   let view = writable<Item[]>([]);
   path.subscribe((path) => {
@@ -29,6 +36,16 @@
   });
 
   let hashesLoaded = stores.wad_hashtables();
+  let isCollapsed = browser ? !!localStorage.getItem("collapsed") : false;
+
+  let defaultLayout = (browser
+    ? JSON.parse(localStorage.getItem("wad_layout") || "0")
+    : null) || [265, 440];
+
+  const onLayoutChange = (sizes: number[]) => {
+    if (!browser) return;
+    localStorage.setItem("wad_layout", JSON.stringify(sizes));
+  };
 </script>
 
 <main class="h-full flex flex-col">
@@ -57,39 +74,102 @@
   <Separator />
 
   {#if $wad}
-    <Breadcrumb.Root>
-      <Breadcrumb.List class="gap-0 sm:gap-0">
-        <Breadcrumb.Item>
-          <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
-            <button
-              {...attrs}
-              on:click|preventDefault={() => {
-                $path = [];
-              }}>/</button
-            >
-          </Breadcrumb.Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Separator />
-        {#each $path as c, i}
-          <Breadcrumb.Item>
-            <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
-              <button
-                {...attrs}
-                on:click|preventDefault={() => {
-                  $path = $path.slice(0, i + 1);
-                }}>{$wad.get(c)?.name}</button
-              >
-            </Breadcrumb.Link>
-          </Breadcrumb.Item>
-          {#if i < $path.length - 1}
+    <Resizable.PaneGroup
+      direction="horizontal"
+      {onLayoutChange}
+      class="h-full w-full items-stretch"
+    >
+      <Resizable.Pane defaultSize={defaultLayout[1]} minSize={30}>
+        <Breadcrumb.Root>
+          <Breadcrumb.List class="gap-0 sm:gap-0">
+            <Breadcrumb.Item>
+              <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
+                <button
+                  {...attrs}
+                  on:click|preventDefault={() => {
+                    $path = [];
+                  }}>/</button
+                >
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
             <Breadcrumb.Separator />
-          {/if}
-        {/each}
-      </Breadcrumb.List>
-    </Breadcrumb.Root>
+            {#each $path as c, i}
+              <Breadcrumb.Item>
+                <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
+                  <button
+                    {...attrs}
+                    on:click|preventDefault={() => {
+                      $path = $path.slice(0, i + 1);
+                    }}>{$wad.get(c)?.name}</button
+                  >
+                </Breadcrumb.Link>
+              </Breadcrumb.Item>
+              {#if i < $path.length - 1}
+                <Breadcrumb.Separator />
+              {/if}
+            {/each}
+          </Breadcrumb.List>
+        </Breadcrumb.Root>
 
-    <ScrollArea class="rounded-md h-full">
-      <Table wad={$wad} {path} data={view} />
-    </ScrollArea>
+        <ScrollArea class="rounded-md h-full">
+          <Table
+            wad={$wad}
+            {path}
+            data={view}
+            on:select={(e) => {
+              if (!$wad || !preview_canvas) return;
+              selected = e.detail !== null ? $wad.get(e.detail) ?? null : null;
+              if (selected !== null && selected.is_file()) {
+                const ext = selected.name.split(".").at(-1);
+                if (ext === "dds" || ext === "tex") {
+                  const data = $wad.load_chunk_data(selected.id);
+                  const tex = decode_texture(data);
+                  const ctx = preview_canvas.getContext("2d");
+                  preview_canvas.width = tex.width;
+                  preview_canvas.height = tex.height;
+                  has_preview = true;
+                  ctx?.putImageData(
+                    new ImageData(
+                      new Uint8ClampedArray(tex.data),
+                      tex.width,
+                      tex.height,
+                    ),
+                    0,
+                    0,
+                  );
+                }
+              } else {
+                has_preview = false;
+              }
+            }}
+          />
+        </ScrollArea>
+      </Resizable.Pane>
+      <Resizable.Handle withHandle />
+      <Resizable.Pane
+        class={cn("flex flex-col")}
+        defaultSize={defaultLayout[0]}
+        collapsible
+        minSize={5}
+      >
+        <div
+          class="grid grid-cols-2 gap-1 grid-rows-[min-content,min-content] h-min justify-center content-center flex-grow w-full font-mono text-sm"
+        >
+          <canvas
+            bind:this={preview_canvas}
+            class={cn(
+              "w-full col-span-2 object-contain",
+              selected === null && "hidden",
+            )}
+          />
+          {#if selected && has_preview && preview_canvas}
+            <span class="pl-2">{selected.name}</span>
+            <span class="pr-2 text-right"
+              >{preview_canvas.width}x{preview_canvas.height}</span
+            >
+          {/if}
+        </div>
+      </Resizable.Pane>
+    </Resizable.PaneGroup>
   {/if}
 </main>
