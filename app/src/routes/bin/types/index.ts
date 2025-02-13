@@ -1,4 +1,4 @@
-import type { BinEntryValue } from "rust";
+import type { BinEntryValue } from "$lib/pkg/rust";
 import type { SvelteComponent } from "svelte";
 import Unknown from "./Unknown.svelte";
 import type { Constructor } from "svelte-render";
@@ -12,21 +12,21 @@ import MapEntry from "./MapEntry.svelte";
 import Empty from "./Empty.svelte";
 
 export const types: {
-	[K in BinEntryValue["kind"]]: Constructor<SvelteComponent>;
+  [K in BinEntryValue["kind"]]: Constructor<SvelteComponent>;
 } = {
-	Object: Object,
-	Namespace: Empty,
-	PropertyJSValue: JsValue,
-	PropertyNone: Unknown,
-	PropertyContainer: Container,
-	PropertyUnorderedContainer: Container,
-	PropertyMap: Map,
-	PropertyMapEntry: MapEntry,
-	PropertyStruct: Struct,
-	PropertyEmbedded: Struct,
-	PropertyOptional: Optional,
+  Object: Object,
+  Namespace: Empty,
+  PropertyJSValue: JsValue,
+  PropertyNone: Unknown,
+  PropertyContainer: Container,
+  PropertyUnorderedContainer: Container,
+  PropertyMap: Map,
+  PropertyMapEntry: MapEntry,
+  PropertyStruct: Struct,
+  PropertyEmbedded: Struct,
+  PropertyOptional: Optional,
 };
 
 export const get_type = (k: unknown) => {
-	return types[k as BinEntryValue["kind"]] ?? Unknown;
+  return types[k as BinEntryValue["kind"]] ?? Unknown;
 };

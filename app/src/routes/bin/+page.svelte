@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as stores from "$lib/stores";
 
-  import { Bin, open_bin, type BinEntry, type TreeNode } from "rust";
+  import { Bin, open_bin, type BinEntry, type TreeNode } from "$lib/pkg/rust";
   import { toast } from "svelte-sonner";
 
   import FilePicker from "$lib/components/FilePicker.svelte";

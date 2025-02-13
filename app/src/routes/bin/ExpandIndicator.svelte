@@ -3,7 +3,7 @@
   import { cn } from "$lib/utils";
   import Icon from "@iconify/svelte";
 
-  import type { BinEntry } from "rust";
+  import type { BinEntry } from "$lib/pkg/rust";
   import { get_type } from "./types";
 
   export let value: BinEntry;

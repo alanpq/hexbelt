@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { type BinObject, type BinProperty, type BinEntryValue } from "rust";
+  import {
+    type BinObject,
+    type BinProperty,
+    type BinEntryValue,
+  } from "$lib/pkg/rust";
 
   import { Input } from "$lib/components/ui/input";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";

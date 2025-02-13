@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { type BinObject, type BinProperty, type BinEntryValue } from "rust";
+  import {
+    type BinObject,
+    type BinProperty,
+    type BinEntryValue,
+  } from "$lib/pkg/rust";
   export let value: BinEntryValue;
 </script>
 

@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { type BinObject, type BinProperty, type BinEntryValue } from "rust";
+  import {
+    type BinObject,
+    type BinProperty,
+    type BinEntryValue,
+  } from "$lib/pkg/rust";
   import { get_type } from ".";
   export let value: BinEntryValue & { kind: "PropertyMapEntry" };
 </script>

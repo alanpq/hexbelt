@@ -18,7 +18,12 @@
   } from "svelte/store";
   import * as Table from "$lib/components/ui/table";
 
-  import { Bin, type BinObject, type BinProperty, type BinEntry } from "rust";
+  import {
+    Bin,
+    type BinObject,
+    type BinProperty,
+    type BinEntry,
+  } from "$lib/pkg/rust";
   import Icon from "@iconify/svelte";
   import { cn } from "$lib/utils";
   import { Button } from "$lib/components/ui/button";
