@@ -14,7 +14,7 @@
   } from "svelte/store";
   import * as Table from "$lib/components/ui/table";
 
-  import { Item, WadTree } from "rust";
+  import { Item, WadTree } from "$lib/pkg/rust";
   import TableActions from "./TableActions.svelte";
   import Icon from "@iconify/svelte";
   import { cn } from "$lib/utils";

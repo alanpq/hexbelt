@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WadTree, Item, Bin } from "rust";
+  import { WadTree, Item, Bin } from "$lib/pkg/rust";
   import Icon from "@iconify/svelte";
   import { toast } from "svelte-sonner";
   import type { Writable } from "svelte/store";

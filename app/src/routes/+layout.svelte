@@ -1,7 +1,10 @@
 <script lang="ts">
   import "../app.css";
   import { onMount, setContext } from "svelte";
-  import init, { load_wad_hashtables, load_bin_hashtables } from "rust";
+  import init, {
+    load_wad_hashtables,
+    load_bin_hashtables,
+  } from "$lib/pkg/rust";
   import { writable, type Writable } from "svelte/store";
   import Nav from "./nav.svelte";
 
