@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { open_wad, decode_texture, Item } from "rust";
+  import { open_wad, decode_texture, Item } from "$lib/pkg/rust";
   import Icon from "@iconify/svelte";
 
   import { Separator } from "$lib/components/ui/select";
