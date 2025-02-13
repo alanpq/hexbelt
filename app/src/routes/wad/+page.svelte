@@ -162,25 +162,24 @@
             <h1 class="font-bold">Failed to load preview:</h1>
             {has_preview}
           </section>
-        {:else}
-          <div
-            class="grid grid-cols-2 gap-1 grid-rows-[min-content,min-content] h-min justify-center content-center flex-grow w-full font-mono text-sm"
-          >
-            <canvas
-              bind:this={preview_canvas}
-              class={cn(
-                "w-full col-span-2 object-contain",
-                has_preview === true && "hidden",
-              )}
-            />
-            {#if selected && has_preview === true && preview_canvas}
-              <span class="pl-2">{selected.name}</span>
-              <span class="pr-2 text-right"
-                >{preview_canvas.width}x{preview_canvas.height}</span
-              >
-            {/if}
-          </div>
         {/if}
+        <div
+          class={cn(
+            "grid grid-cols-2 gap-1 grid-rows-[min-content,min-content] h-min justify-center content-center flex-grow w-full font-mono text-sm",
+            has_preview !== true && "hidden",
+          )}
+        >
+          <canvas
+            bind:this={preview_canvas}
+            class="w-full col-span-2 object-contain"
+          />
+          {#if selected && has_preview === true && preview_canvas}
+            <span class="pl-2">{selected.name}</span>
+            <span class="pr-2 text-right"
+              >{preview_canvas.width}x{preview_canvas.height}</span
+            >
+          {/if}
+        </div>
       </Resizable.Pane>
     </Resizable.PaneGroup>
   {/if}
