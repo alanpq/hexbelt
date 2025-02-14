@@ -94,7 +94,7 @@
       {onLayoutChange}
       class="h-full w-full items-stretch"
     >
-      <Resizable.Pane defaultSize={defaultLayout[1]} minSize={30}>
+      <Resizable.Pane defaultSize={defaultLayout[0]} minSize={30}>
         <Breadcrumb.Root>
           <Breadcrumb.List class="gap-0 sm:gap-0">
             <Breadcrumb.Item>
@@ -153,7 +153,7 @@
       <Resizable.Handle withHandle />
       <Resizable.Pane
         class={cn("flex flex-col place-items-center justify-center")}
-        defaultSize={defaultLayout[0]}
+        defaultSize={defaultLayout[1]}
         collapsible
         minSize={5}
       >
