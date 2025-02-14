@@ -13,6 +13,7 @@
     type Writable,
   } from "svelte/store";
   import * as Table from "$lib/components/ui/table";
+  import VirtualRow from "$lib/components/VirtualRow.svelte";
 
   import { Item, WadTree } from "$lib/pkg/rust";
   import TableActions from "./TableActions.svelte";
@@ -190,8 +191,8 @@
       </Table.Row>
       {#each $pageRows as row (row.id)}
         <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-          <Table.Row
-            {...rowAttrs}
+          <VirtualRow
+            {rowAttrs}
             class={cn(
               row.isData() && row.original.is_dir() && "cursor-pointer",
               row.isData() && row.original.id === selected && "bg-muted/80",
@@ -205,24 +206,29 @@
                 dispatch("select", selected);
               }
             }}
+            let:inView
           >
-            {#each row.cells as cell (cell.id)}
-              <Subscribe attrs={cell.attrs()} let:attrs>
-                <Table.Cell
-                  {...attrs}
-                  class="py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]"
-                >
-                  {#if cell.id === "size"}
-                    <div class="text-right font-medium">
+            {#if inView}
+              {#each row.cells as cell (cell.id)}
+                <Subscribe attrs={cell.attrs()} let:attrs>
+                  <Table.Cell
+                    {...attrs}
+                    class="py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]"
+                  >
+                    {#if cell.id === "size"}
+                      <div class="text-right font-medium">
+                        <Render of={cell.render()} />
+                      </div>
+                    {:else}
                       <Render of={cell.render()} />
-                    </div>
-                  {:else}
-                    <Render of={cell.render()} />
-                  {/if}
-                </Table.Cell>
-              </Subscribe>
-            {/each}
-          </Table.Row>
+                    {/if}
+                  </Table.Cell>
+                </Subscribe>
+              {/each}
+            {:else}
+              <div class="w-0 h-7"></div>
+            {/if}
+          </VirtualRow>
         </Subscribe>
       {/each}
     </Table.Body>
