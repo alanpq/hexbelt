@@ -6,6 +6,7 @@
 		"dev": "vite dev",
 		"modulize-wasm": "node ../rust/modulize.mjs",
 		"wasm": "wasm-pack build ../rust --target web && yarn modulize-wasm",
+		"wasm:dev": "wasm-pack build --dev --no-opt ../rust --target web && yarn modulize-wasm",
 		"build": "yarn wasm && vite build",
 		"preview": "vite preview",
 		"test": "yarn test:integration && yarn test:unit",
