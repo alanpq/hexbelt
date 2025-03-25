@@ -1,6 +1,7 @@
 <script lang="ts">
   import { decode_texture, type Texture } from "$lib/pkg/rust";
   import { cn } from "$lib/utils";
+  import { Slider } from "$lib/components/ui/slider";
   import debounce from "lodash/debounce";
 
   export let name: string | undefined = undefined;
@@ -84,13 +85,15 @@
       >
     {/if}
     {#if max_mips > 0}
-      <input
-        class="col-span-2 mx-2"
-        type="range"
-        min="0"
+      <Slider
+        class="col-span-2 my-1 mb-3 w-[calc(100%-2em)] mx-auto"
+        min={0}
         max={max_mips}
-        step="1"
-        bind:value={mipmap}
+        step={1}
+        value={[mipmap]}
+        onValueChange={(v) => {
+          mipmap = v[0];
+        }}
       />
     {/if}
   </div>
