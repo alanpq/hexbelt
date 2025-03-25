@@ -23,6 +23,8 @@
   let preview_canvas: null | HTMLCanvasElement = null;
   let has_preview: boolean | string = false;
 
+  let mipmap = 1;
+
   let view = writable<Item[]>([]);
   path.subscribe((path) => {
     if (!$wad) return;
@@ -50,7 +52,7 @@
   const drawPreview = (id: number) => {
     if (!preview_canvas || !$wad) return;
     const data = $wad.load_chunk_data(id);
-    const tex = decode_texture(data);
+    const tex = decode_texture(data, mipmap);
     const ctx = preview_canvas.getContext("2d");
     preview_canvas.width = tex.width;
     preview_canvas.height = tex.height;
@@ -133,7 +135,8 @@
             data={view}
             on:select={(e) => {
               if (!$wad || !preview_canvas) return;
-              selected = e.detail !== null ? $wad.get(e.detail) ?? null : null;
+              selected =
+                e.detail !== null ? ($wad.get(e.detail) ?? null) : null;
               if (selected !== null && selected.is_file()) {
                 const ext = selected.name.split(".").at(-1);
                 if (ext === "dds" || ext === "tex") {
@@ -161,6 +164,16 @@
           <section class="text-red-400 p-4">
             <h1 class="font-bold">Failed to load preview:</h1>
             {has_preview}
+            <input
+              type="range"
+              min="0"
+              max="10"
+              step="1"
+              bind:value={mipmap}
+              on:change={() => {
+                selected?.id && drawPreview(selected.id);
+              }}
+            />
           </section>
         {/if}
         <div
@@ -178,6 +191,16 @@
             <span class="pr-2 text-right"
               >{preview_canvas.width}x{preview_canvas.height}</span
             >
+            <input
+              type="range"
+              min="0"
+              max="10"
+              step="1"
+              bind:value={mipmap}
+              on:change={() => {
+                selected?.id && drawPreview(selected.id);
+              }}
+            />
           {/if}
         </div>
       </Resizable.Pane>

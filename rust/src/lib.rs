@@ -45,6 +45,7 @@ extern "C" {
     fn log_many(a: &str, b: &str);
 }
 
+#[macro_export]
 macro_rules! log{
     // Note that this is using the `log` function imported above during
     // `bare_bones`

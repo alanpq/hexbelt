@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 
 use itertools::Itertools;
-use league_toolkit::core::meta::{self, BinTree, ParseError};
+use league_toolkit::core::meta::{self, value::PropertyValueEnum, BinTree};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tsify_next::Tsify;
@@ -85,14 +85,10 @@ pub enum BinEntryValue {
 }
 
 impl BinEntryValue {
-    pub fn from_prop_value(
-        value: &meta::property::value::PropertyValueEnum,
-    ) -> (Self, Option<Vec<BinEntry>>) {
+    pub fn from_prop_value(value: &PropertyValueEnum) -> (Self, Option<Vec<BinEntry>>) {
         match value {
-            meta::property::value::PropertyValueEnum::None(_) => {
-                (BinEntryValue::PropertyNone, None)
-            }
-            meta::property::value::PropertyValueEnum::Container(v) => (
+            PropertyValueEnum::None(_) => (BinEntryValue::PropertyNone, None),
+            PropertyValueEnum::Container(v) => (
                 BinEntryValue::PropertyContainer,
                 Some(
                     v.items
@@ -102,7 +98,7 @@ impl BinEntryValue {
                         .collect(),
                 ),
             ),
-            meta::property::value::PropertyValueEnum::UnorderedContainer(v) => (
+            PropertyValueEnum::UnorderedContainer(v) => (
                 BinEntryValue::PropertyUnorderedContainer,
                 Some(
                     v.0.items
@@ -112,7 +108,7 @@ impl BinEntryValue {
                         .collect(),
                 ),
             ),
-            meta::property::value::PropertyValueEnum::Map(v) => (
+            PropertyValueEnum::Map(v) => (
                 BinEntryValue::PropertyMap,
                 Some(
                     v.entries
@@ -128,20 +124,20 @@ impl BinEntryValue {
                         .collect(),
                 ),
             ),
-            meta::property::value::PropertyValueEnum::Struct(v) => (
+            PropertyValueEnum::Struct(v) => (
                 BinEntryValue::PropertyStruct {
                     class: v.class_hash.to_string(),
                 },
                 Some(v.properties.values().map_into().collect()),
             ),
-            meta::property::value::PropertyValueEnum::Embedded(v) => (
+            PropertyValueEnum::Embedded(v) => (
                 BinEntryValue::PropertyEmbedded {
                     class: v.0.class_hash.to_string(),
                 },
                 Some(v.0.properties.values().map_into().collect()),
             ),
 
-            meta::property::value::PropertyValueEnum::Optional(v) => match &v.1 {
+            PropertyValueEnum::Optional(v) => match &v.value {
                 Some(inner) => {
                     let (inner, children) = BinEntryValue::from_prop_value(inner);
                     (
@@ -171,10 +167,7 @@ pub struct BinEntry {
 }
 
 impl BinEntry {
-    pub fn from_value(
-        name: Option<String>,
-        value: &meta::property::value::PropertyValueEnum,
-    ) -> Self {
+    pub fn from_value(name: Option<String>, value: &PropertyValueEnum) -> Self {
         let (value, children) = BinEntryValue::from_prop_value(value);
         Self {
             name,
@@ -264,7 +257,7 @@ impl TreeNode {
 }
 
 impl Bin {
-    pub fn from_bytes(bytes: &[u8]) -> Result<Self, ParseError> {
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self, meta::Error> {
         // tracing::debug!("reading bin file ({} bytes)...", bytes.len());
         let bin = BinTree::from_reader(&mut Cursor::new(bytes))?;
 
