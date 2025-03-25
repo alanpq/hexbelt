@@ -58,6 +58,7 @@
       disabled={!$hashesLoaded}
       on:open={async ({ detail: files }) => {
         try {
+          $wad = null;
           $wad = await open_wad(files[0]);
           console.log(Array.from($wad.children).map((i) => $wad?.get(i)));
           $path = [];
