@@ -56,7 +56,7 @@
   };
 </script>
 
-<div class="w-full max-h-[100%]">
+<div class="w-full max-h-[80%]">
   {#if typeof has_preview === "string"}
     <section class="text-red-400 p-4">
       <h1 class="font-bold">Failed to load preview:</h1>
