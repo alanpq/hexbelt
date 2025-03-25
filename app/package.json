@@ -24,6 +24,7 @@
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@tailwindcss/typography": "^0.5.13",
 		"@types/eslint": "^9.6.0",
+		"@types/lodash": "^4",
 		"autoprefixer": "^10.4.19",
 		"colord": "^2.9.3",
 		"eslint": "^9.0.0",
@@ -46,6 +47,7 @@
 	"dependencies": {
 		"bits-ui": "^0.21.13",
 		"clsx": "^2.1.1",
+		"lodash": "^4.17.21",
 		"mode-watcher": "^0.4.1",
 		"paneforge": "^0.0.5",
 		"svelte-radix": "^1.1.0",

@@ -15,15 +15,16 @@
   import FilePicker from "$lib/components/FilePicker.svelte";
   import { browser } from "$app/environment";
   import { cn } from "$lib/utils";
+  import TexturePreview from "./TexturePreview.svelte";
 
   let wad = stores.wad();
   let path = stores.wad_path();
 
   let selected: null | Item = null;
-  let preview_canvas: null | HTMLCanvasElement = null;
-  let has_preview: boolean | string = false;
 
   let mipmap = 1;
+
+  let texture_data: Uint8Array<ArrayBufferLike> | undefined;
 
   let view = writable<Item[]>([]);
   path.subscribe((path) => {
@@ -47,21 +48,6 @@
   const onLayoutChange = (sizes: number[]) => {
     if (!browser) return;
     localStorage.setItem("wad_layout", JSON.stringify(sizes));
-  };
-
-  const drawPreview = (id: number) => {
-    if (!preview_canvas || !$wad) return;
-    const data = $wad.load_chunk_data(id);
-    const tex = decode_texture(data, mipmap);
-    const ctx = preview_canvas.getContext("2d");
-    preview_canvas.width = tex.width;
-    preview_canvas.height = tex.height;
-    has_preview = true;
-    ctx?.putImageData(
-      new ImageData(new Uint8ClampedArray(tex.data), tex.width, tex.height),
-      0,
-      0,
-    );
   };
 </script>
 
@@ -134,20 +120,14 @@
             {path}
             data={view}
             on:select={(e) => {
-              if (!$wad || !preview_canvas) return;
+              if (!$wad) return;
               selected =
                 e.detail !== null ? ($wad.get(e.detail) ?? null) : null;
               if (selected !== null && selected.is_file()) {
                 const ext = selected.name.split(".").at(-1);
                 if (ext === "dds" || ext === "tex") {
-                  try {
-                    drawPreview(selected.id);
-                  } catch (e) {
-                    has_preview = `${e}`;
-                  }
+                  texture_data = $wad.load_chunk_data(selected.id);
                 }
-              } else {
-                has_preview = false;
               }
             }}
           />
@@ -155,54 +135,14 @@
       </Resizable.Pane>
       <Resizable.Handle withHandle />
       <Resizable.Pane
-        class={cn("flex flex-col place-items-center justify-center")}
+        class={cn(
+          "flex flex-col place-items-center justify-center object-contain",
+        )}
         defaultSize={defaultLayout[1]}
         collapsible
         minSize={5}
       >
-        {#if typeof has_preview === "string"}
-          <section class="text-red-400 p-4">
-            <h1 class="font-bold">Failed to load preview:</h1>
-            {has_preview}
-            <input
-              type="range"
-              min="0"
-              max="10"
-              step="1"
-              bind:value={mipmap}
-              on:change={() => {
-                selected?.id && drawPreview(selected.id);
-              }}
-            />
-          </section>
-        {/if}
-        <div
-          class={cn(
-            "grid grid-cols-2 gap-1 grid-rows-[min-content,min-content] h-min justify-center content-center flex-grow w-full font-mono text-sm",
-            has_preview !== true && "hidden",
-          )}
-        >
-          <canvas
-            bind:this={preview_canvas}
-            class="w-full col-span-2 object-contain"
-          />
-          {#if selected && has_preview === true && preview_canvas}
-            <span class="pl-2">{selected.name}</span>
-            <span class="pr-2 text-right"
-              >{preview_canvas.width}x{preview_canvas.height}</span
-            >
-            <input
-              type="range"
-              min="0"
-              max="10"
-              step="1"
-              bind:value={mipmap}
-              on:change={() => {
-                selected?.id && drawPreview(selected.id);
-              }}
-            />
-          {/if}
-        </div>
+        <TexturePreview data={texture_data} name={selected?.name} />
       </Resizable.Pane>
     </Resizable.PaneGroup>
   {/if}

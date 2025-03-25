@@ -688,6 +688,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4":
+  version: 4.17.16
+  resolution: "@types/lodash@npm:4.17.16"
+  checksum: 10c0/cf017901b8ab1d7aabc86d5189d9288f4f99f19a75caf020c0e2c77b8d4cead4db0d0b842d009b029339f92399f49f34377dd7c2721053388f251778b4c23534
+  languageName: node
+  linkType: hard
+
 "@types/pug@npm:^2.0.6":
   version: 2.0.10
   resolution: "@types/pug@npm:2.0.10"
@@ -988,6 +995,7 @@ __metadata:
     "@sveltejs/vite-plugin-svelte": "npm:^3.0.0"
     "@tailwindcss/typography": "npm:^0.5.13"
     "@types/eslint": "npm:^9.6.0"
+    "@types/lodash": "npm:^4"
     autoprefixer: "npm:^10.4.19"
     bits-ui: "npm:^0.21.13"
     clsx: "npm:^2.1.1"
@@ -995,6 +1003,7 @@ __metadata:
     eslint: "npm:^9.0.0"
     eslint-plugin-svelte: "npm:^2.36.0"
     globals: "npm:^15.0.0"
+    lodash: "npm:^4.17.21"
     mode-watcher: "npm:^0.4.1"
     paneforge: "npm:^0.0.5"
     postcss: "npm:^8.4.38"
@@ -2463,6 +2472,13 @@ __metadata:
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: 10c0/402fa16a1edd7538de5b5903a90228aa48eb5533986ba7fa26606a49db2572bf414ff73a2c9f5d5fd36b31c46a5d5c7e1527749c07cbcf965ccff5fbdf32c506
+  languageName: node
+  linkType: hard
+
+"lodash@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "lodash@npm:4.17.21"
+  checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
   languageName: node
   linkType: hard
 
