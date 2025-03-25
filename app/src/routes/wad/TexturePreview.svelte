@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { decode_texture } from "$lib/pkg/rust";
+  import { decode_texture, type Texture } from "$lib/pkg/rust";
   import { cn } from "$lib/utils";
   import debounce from "lodash/debounce";
 
@@ -12,25 +12,46 @@
   let preview_canvas: null | HTMLCanvasElement = null;
   let has_preview: boolean | string = false;
 
+  let mips: {
+    image: ImageData;
+    width: number;
+    height: number;
+    mipmaps: number;
+  }[] = [];
+
   $: {
     data;
     mipmap;
     debounce(drawPreview, 100)();
   }
 
+  $: {
+    data;
+    mips = [];
+  }
+
   const drawPreview = () => {
     if (!preview_canvas || !data) return;
-    const tex = decode_texture(data, mipmap);
     const ctx = preview_canvas.getContext("2d");
+    if (!mips[mipmap]) {
+      const tex = decode_texture(data, mipmap);
+      mips[mipmap] = {
+        image: new ImageData(
+          new Uint8ClampedArray(tex.data),
+          tex.width,
+          tex.height,
+        ),
+        width: tex.width,
+        height: tex.height,
+        mipmaps: tex.mipmaps,
+      };
+    }
+    const tex = mips[mipmap];
+    max_mips = tex.mipmaps - 1;
     preview_canvas.width = tex.width;
     preview_canvas.height = tex.height;
-    max_mips = tex.mipmaps - 1;
     has_preview = true;
-    ctx?.putImageData(
-      new ImageData(new Uint8ClampedArray(tex.data), tex.width, tex.height),
-      0,
-      0,
-    );
+    ctx?.putImageData(tex.image, 0, 0);
   };
 </script>
 
