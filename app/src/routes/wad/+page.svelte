@@ -125,6 +125,7 @@
                 e.detail !== null ? ($wad.get(e.detail) ?? null) : null;
               if (selected !== null && selected.is_file()) {
                 const ext = selected.name.split(".").at(-1);
+                texture_data = undefined;
                 if (ext === "dds" || ext === "tex") {
                   texture_data = $wad.load_chunk_data(selected.id);
                 }
@@ -142,7 +143,10 @@
         collapsible
         minSize={5}
       >
-        <TexturePreview data={texture_data} name={selected?.name} />
+        <TexturePreview
+          data={texture_data}
+          name={texture_data && selected?.name}
+        />
       </Resizable.Pane>
     </Resizable.PaneGroup>
   {/if}

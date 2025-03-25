@@ -44,7 +44,7 @@
   <div
     class={cn(
       "grid grid-cols-1 gap-1 grid-rows-[auto,min-content] h-full justify-center content-center flex-grow w-full font-mono text-sm",
-      has_preview !== true && "hidden",
+      (has_preview !== true || !data) && "hidden",
     )}
   >
     <canvas
