@@ -5,7 +5,11 @@
     Subscribe,
     createRender,
   } from "svelte-headless-table";
-  import { addSortBy } from "svelte-headless-table/plugins";
+  import {
+    addFlatten,
+    addGroupBy,
+    addSortBy,
+  } from "svelte-headless-table/plugins";
   import {
     derived,
     readable,
@@ -32,6 +36,7 @@
   const table = createTable(data, {
     sort: addSortBy({
       disableMultiSort: true,
+      initialSortKeys: [{ id: "name", order: "asc" }],
     }),
   });
 
@@ -97,6 +102,13 @@
       header: "Name",
     }),
     table.column({
+      accessor: ({ children, name }) => children?.length ?? 0,
+      header: "Children",
+      id: "children",
+
+      cell: ({ value }) => (value > 0 ? value : ""),
+    }),
+    table.column({
       accessor: "size",
       header: "Size",
       cell: ({ value }) => humanFileSize(value),
@@ -145,21 +157,21 @@
                     cell.id == "icon" || cell.id == "actions" ? "w-0" : null,
                   )}
                 >
-                  {#if cell.id === "size"}
-                    {@const order = $sortKeys.find((v, i) => v.id == "size")}
-                    <div class="flex justify-end">
+                  {#if cell.id === "size" || cell.id === "name" || cell.id === "children"}
+                    {@const order = $sortKeys.find((v, i) => v.id == cell.id)}
+                    <div
+                      class={cn("flex", cell.id !== "name" && "justify-end")}
+                    >
                       <Button
                         variant="ghost"
                         class=""
                         on:click={props.sort.toggle}
                       >
                         <Render of={cell.render()} />
-                        {#if order}
-                          <Icon
-                            icon={sort_icons[order.order]}
-                            class="ml-2 h-4 w-4"
-                          />
-                        {/if}
+                        <Icon
+                          icon={order ? sort_icons[order.order] : "mdi:sort"}
+                          class="ml-2 h-4 w-4"
+                        />
                       </Button>
                     </div>
                   {:else}
@@ -215,7 +227,7 @@
                     {...attrs}
                     class="py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]"
                   >
-                    {#if cell.id === "size"}
+                    {#if cell.id === "size" || cell.id === "children"}
                       <div class="text-right font-medium">
                         <Render of={cell.render()} />
                       </div>
