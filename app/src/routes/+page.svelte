@@ -14,7 +14,7 @@
 	<Card.Root class="flex flex-col">
 		<Card.Header>
 			<Card.Title>Wad Walker</Card.Title>
-			<Card.Description>Open .wad files</Card.Description>
+			<Card.Description>Open & extract from .wad files</Card.Description>
 		</Card.Header>
 		<span class="flex-grow"></span>
 		<FileDrop
