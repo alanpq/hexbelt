@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from "svelte/legacy";
 
   import { open_wad, decode_texture, Item } from "$lib/pkg/rust";
   import Icon from "@iconify/svelte";
@@ -89,30 +89,30 @@
         <Breadcrumb.Root>
           <Breadcrumb.List class="gap-0 sm:gap-0">
             <Breadcrumb.Item>
-              <Breadcrumb.Link asChild class="px-2 py-1" >
+              <Breadcrumb.Link asChild class="px-2 py-1">
                 {#snippet children({ attrs })}
-                                <button
+                  <button
                     {...attrs}
                     onclick={preventDefault(() => {
                       $path = [];
                     })}>/</button
                   >
-                                              {/snippet}
-                            </Breadcrumb.Link>
+                {/snippet}
+              </Breadcrumb.Link>
             </Breadcrumb.Item>
             <Breadcrumb.Separator />
             {#each $path as c, i}
               <Breadcrumb.Item>
-                <Breadcrumb.Link asChild class="px-2 py-1" >
+                <Breadcrumb.Link asChild class="px-2 py-1">
                   {#snippet children({ attrs })}
-                                    <button
+                    <button
                       {...attrs}
                       onclick={preventDefault(() => {
                         $path = $path.slice(0, i + 1);
-                      })}>{$wad.get(c)?.name}</button
+                      })}>{$wad?.get(c)?.name}</button
                     >
-                                                    {/snippet}
-                                </Breadcrumb.Link>
+                  {/snippet}
+                </Breadcrumb.Link>
               </Breadcrumb.Item>
               {#if i < $path.length - 1}
                 <Breadcrumb.Separator />
