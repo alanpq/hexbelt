@@ -4,7 +4,11 @@
     type BinProperty,
     type BinEntryValue,
   } from "$lib/pkg/rust";
-  export let value: BinEntryValue & { kind: "Object" };
+  interface Props {
+    value: BinEntryValue & { kind: "Object" };
+  }
+
+  let { value }: Props = $props();
 </script>
 
 <span class="text-muted-foreground">{value.kind.slice(8)}</span>

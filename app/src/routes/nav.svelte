@@ -5,8 +5,12 @@
   import * as Tooltip from "$lib/components/ui/tooltip";
   import Icon from "@iconify/svelte";
 
-  export let isCollapsed: boolean;
-  export let routes: Route[];
+  interface Props {
+    isCollapsed: boolean;
+    routes: Route[];
+  }
+
+  let { isCollapsed, routes }: Props = $props();
 </script>
 
 <div
@@ -19,22 +23,24 @@
     {#each routes as route}
       {#if isCollapsed}
         <Tooltip.Root openDelay={0}>
-          <Tooltip.Trigger asChild let:builder>
-            <Button
-              href={route.href}
-              builders={[builder]}
-              variant={route.variant}
-              size="icon"
-              class={cn(
-                "size-9",
-                route.variant === "default" &&
-                  "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
-              )}
-            >
-              <Icon icon={route.icon} class="size-4" aria-hidden="true" />
-              <span class="sr-only">{route.title}</span>
-            </Button>
-          </Tooltip.Trigger>
+          <Tooltip.Trigger asChild >
+            {#snippet children({ builder })}
+                        <Button
+                href={route.href}
+                builders={[builder]}
+                variant={route.variant}
+                size="icon"
+                class={cn(
+                  "size-9",
+                  route.variant === "default" &&
+                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
+                )}
+              >
+                <Icon icon={route.icon} class="size-4" aria-hidden="true" />
+                <span class="sr-only">{route.title}</span>
+              </Button>
+                                  {/snippet}
+                    </Tooltip.Trigger>
           <Tooltip.Content side="right" class="flex items-center gap-4">
             {route.title}
             {#if route.label}

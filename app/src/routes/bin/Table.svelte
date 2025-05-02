@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import {
     createTable,
     Render,
@@ -31,8 +33,12 @@
   import { types } from "./types";
   import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
 
-  export let bin: Bin;
-  export let data: Readable<BinEntry[]>;
+  interface Props {
+    bin: Bin;
+    data: Readable<BinEntry[]>;
+  }
+
+  let { bin, data }: Props = $props();
 
   const table = createTable(data, {
     sort: addSortBy({
@@ -77,7 +83,9 @@
 
   const { sortKeys } = pluginStates.sort;
   const { expandedIds } = pluginStates.expand;
-  $: $sortKeys;
+  run(() => {
+    $sortKeys;
+  });
 </script>
 
 <div class="rounded-md w-full h-full overflow-x-clip">
@@ -90,21 +98,23 @@
               {#each headerRow.cells as cell (cell.id)}
                 <Subscribe
                   attrs={cell.attrs()}
-                  let:attrs
+                  
                   props={cell.props()}
-                  let:props
+                  
                 >
-                  <Table.Head
-                    {...attrs}
-                    class={cn(
-                      "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden",
-                      cell.id == "name" && "w-[20ch] pl-7",
-                      cell.id == "expanded" ? "w-0" : null,
-                    )}
-                  >
-                    <Render of={cell.render()} />
-                  </Table.Head>
-                </Subscribe>
+                  {#snippet children({ attrs, props })}
+                                    <Table.Head
+                      {...attrs}
+                      class={cn(
+                        "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden",
+                        cell.id == "name" && "w-[20ch] pl-7",
+                        cell.id == "expanded" ? "w-0" : null,
+                      )}
+                    >
+                      <Render of={cell.render()} />
+                    </Table.Head>
+                                                    {/snippet}
+                                </Subscribe>
               {/each}
             </Table.Row>
           </Subscribe>
@@ -112,42 +122,46 @@
       </Table.Header>
       <Table.Body {...$tableBodyAttrs}>
         {#each $pageRows as row (row.id)}
-          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row {...rowAttrs}>
-              {#each row.cells as cell (cell.id)}
-                {@const parent = row.parentRow}
-                <Subscribe
-                  attrs={cell.attrs()}
-                  let:attrs
-                  props={cell.props()}
-                  let:props
-                >
-                  <Table.Cell
-                    {...attrs}
-                    class={cn(
-                      "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw] relative",
-                    )}
-                    style={`
-                    transform: translateX(${row.depth}rem);
-                    ${
-                      cell.id == "value" ? `padding-right: ${row.depth}rem` : ""
-                    }
-                  `}
+          <Subscribe rowAttrs={row.attrs()} >
+            {#snippet children({ rowAttrs })}
+                        <Table.Row {...rowAttrs}>
+                {#each row.cells as cell (cell.id)}
+                  {@const parent = row.parentRow}
+                  <Subscribe
+                    attrs={cell.attrs()}
+                    
+                    props={cell.props()}
+                    
                   >
-                    {#if cell.id === "name"}
-                      {#if !(cell.isData() && !cell.value)}
-                        <div class={cn("font-medium")}>
+                    {#snippet children({ attrs, props })}
+                                    <Table.Cell
+                        {...attrs}
+                        class={cn(
+                          "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw] relative",
+                        )}
+                        style={`
+                        transform: translateX(${row.depth}rem);
+                        ${
+                          cell.id == "value" ? `padding-right: ${row.depth}rem` : ""
+                        }
+                      `}
+                      >
+                        {#if cell.id === "name"}
+                          {#if !(cell.isData() && !cell.value)}
+                            <div class={cn("font-medium")}>
+                              <Render of={cell.render()} />
+                            </div>
+                          {/if}
+                        {:else}
                           <Render of={cell.render()} />
-                        </div>
-                      {/if}
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Cell>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
+                        {/if}
+                      </Table.Cell>
+                                                      {/snippet}
+                                </Subscribe>
+                {/each}
+              </Table.Row>
+                                  {/snippet}
+                    </Subscribe>
         {/each}
       </Table.Body>
     </Table.Root>

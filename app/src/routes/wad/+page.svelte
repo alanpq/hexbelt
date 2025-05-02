@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import { open_wad, decode_texture, Item } from "$lib/pkg/rust";
   import Icon from "@iconify/svelte";
 
@@ -20,11 +22,11 @@
   let wad = stores.wad();
   let path = stores.wad_path();
 
-  let selected: null | Item = null;
+  let selected: null | Item = $state(null);
 
   let mipmap = 1;
 
-  let texture_data: Uint8Array<ArrayBufferLike> | undefined;
+  let texture_data: Uint8Array<ArrayBufferLike> | undefined = $state();
 
   let view = writable<Item[]>([]);
   path.subscribe((path) => {
@@ -72,7 +74,7 @@
       <Icon icon="fluent:spinner-ios-16-filled" class="h-5 w-5 animate-spin" />
       <span class="text-muted-foreground text-sm">Loading hashtables...</span>
     {/if}
-    <div class="flex flex-grow" />
+    <div class="flex flex-grow"></div>
   </header>
 
   <Separator />
@@ -87,26 +89,30 @@
         <Breadcrumb.Root>
           <Breadcrumb.List class="gap-0 sm:gap-0">
             <Breadcrumb.Item>
-              <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
-                <button
-                  {...attrs}
-                  on:click|preventDefault={() => {
-                    $path = [];
-                  }}>/</button
-                >
-              </Breadcrumb.Link>
+              <Breadcrumb.Link asChild class="px-2 py-1" >
+                {#snippet children({ attrs })}
+                                <button
+                    {...attrs}
+                    onclick={preventDefault(() => {
+                      $path = [];
+                    })}>/</button
+                  >
+                                              {/snippet}
+                            </Breadcrumb.Link>
             </Breadcrumb.Item>
             <Breadcrumb.Separator />
             {#each $path as c, i}
               <Breadcrumb.Item>
-                <Breadcrumb.Link asChild class="px-2 py-1" let:attrs>
-                  <button
-                    {...attrs}
-                    on:click|preventDefault={() => {
-                      $path = $path.slice(0, i + 1);
-                    }}>{$wad.get(c)?.name}</button
-                  >
-                </Breadcrumb.Link>
+                <Breadcrumb.Link asChild class="px-2 py-1" >
+                  {#snippet children({ attrs })}
+                                    <button
+                      {...attrs}
+                      onclick={preventDefault(() => {
+                        $path = $path.slice(0, i + 1);
+                      })}>{$wad.get(c)?.name}</button
+                    >
+                                                    {/snippet}
+                                </Breadcrumb.Link>
               </Breadcrumb.Item>
               {#if i < $path.length - 1}
                 <Breadcrumb.Separator />

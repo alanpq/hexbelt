@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import * as stores from "$lib/stores";
 
   import { Bin, open_bin, type BinEntry, type TreeNode } from "$lib/pkg/rust";
@@ -32,7 +34,9 @@
     return entry;
   };
 
-  $: $bin && data.set(make_entry($bin, $bin.data.tree).children);
+  run(() => {
+    $bin && data.set(make_entry($bin, $bin.data.tree).children);
+  });
 </script>
 
 <header>

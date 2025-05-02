@@ -19,6 +19,11 @@
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
   import { cn } from "$lib/utils";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 
   let defaultLayout = (browser
     ? JSON.parse(localStorage.getItem("layout") || "0")
@@ -34,7 +39,7 @@
   let bin_hashtables = writable(false);
   setContext("bin_hashtables", bin_hashtables);
 
-  let isCollapsed = browser ? !!localStorage.getItem("collapsed") : false;
+  let isCollapsed = $state(browser ? !!localStorage.getItem("collapsed") : false);
 
   const onLayoutChange = (sizes: number[]) => {
     if (!browser) return;
@@ -86,7 +91,7 @@
 
 <ModeWatcher />
 <Toaster richColors />
-<div id="color-portal" />
+<div id="color-portal"></div>
 
 <Resizable.PaneGroup
   direction="horizontal"
@@ -107,7 +112,7 @@
   </Resizable.Pane>
   <Resizable.Handle withHandle />
   <Resizable.Pane defaultSize={defaultLayout[1]} minSize={30}>
-    <slot></slot>
+    {@render children?.()}
   </Resizable.Pane>
 </Resizable.PaneGroup>
 

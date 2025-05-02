@@ -4,16 +4,21 @@
   import { createEventDispatcher } from "svelte";
   import { cn } from "$lib/utils";
 
-  export let disabled: boolean = false;
 
   const dispatch = createEventDispatcher<{
     open: FileList;
   }>();
 
-  let files: FileList | null;
+  let files: FileList | null = $state();
 
-  let className: string | null = null;
-  export { className as class };
+  interface Props {
+    disabled?: boolean;
+    class?: string | null;
+    children?: import('svelte').Snippet;
+  }
+
+  let { disabled = false, class: className = null, children }: Props = $props();
+  
 </script>
 
 <section class="flex">
@@ -32,6 +37,6 @@
       dispatch("open", files);
     }}
   >
-    <slot />
+    {@render children?.()}
   </Button>
 </section>

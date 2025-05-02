@@ -5,15 +5,19 @@
   import ColorWrapper from "$lib/components/ColorWrapper.svelte";
   import ColorInput from "$lib/components/ColorInput.svelte";
 
-  export let color: [number, number, number, number];
+  interface Props {
+    color: [number, number, number, number];
+  }
+
+  let { color }: Props = $props();
 
   // $: byteColor = color.map((c: number) => c * 255);
-  $: c = {
+  let c = $derived({
     r: color[0],
     g: color[1],
     b: color[2],
     a: color[3] / 255,
-  };
+  });
 </script>
 
 <!-- {JSON.stringify(color)} -->

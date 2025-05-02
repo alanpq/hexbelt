@@ -13,8 +13,12 @@
   import { cn } from "$lib/utils";
   import Color from "./Color.svelte";
 
-  export let value: BinEntryValue & { kind: "PropertyJSValue" };
-  $: inner = value.value;
+  interface Props {
+    value: BinEntryValue & { kind: "PropertyJSValue" };
+  }
+
+  let { value }: Props = $props();
+  let inner = $derived(value.value);
 
   const is_vec = (
     t: (typeof value)["value"],
@@ -28,7 +32,7 @@
   const vec_to_color = (t: [number, number, number, number]) =>
     t.map((c) => c * 255) as [number, number, number, number];
 
-  let as_color = false;
+  let as_color = $state(false);
 </script>
 
 {#if inner.kind == "String"}
@@ -73,16 +77,18 @@
       >
         {#each inner.value as i}
           <Tooltip.Root>
-            <Tooltip.Trigger asChild let:builder>
-              <div {...builder} use:builder.action>
-                <Input
-                  type="text"
-                  disabled
-                  class="bg-secondary px-1.5 text-ellipsis overflow-clip text-cyan-300 h-5 font-mono rounded-sm"
-                  value={i.toString().length < 4 ? i.toPrecision(4) : i}
-                />
-              </div>
-            </Tooltip.Trigger>
+            <Tooltip.Trigger asChild >
+              {#snippet children({ builder })}
+                                                    <div {...builder} use:builder.action>
+                  <Input
+                    type="text"
+                    disabled
+                    class="bg-secondary px-1.5 text-ellipsis overflow-clip text-cyan-300 h-5 font-mono rounded-sm"
+                    value={i.toString().length < 4 ? i.toPrecision(4) : i}
+                  />
+                </div>
+                                                                {/snippet}
+                                                </Tooltip.Trigger>
             <Tooltip.Content>{i}</Tooltip.Content>
           </Tooltip.Root>
         {/each}
@@ -93,13 +99,15 @@
     {/if}
     {#if is_color(inner.value)}
       <Tooltip.Root>
-        <Tooltip.Trigger asChild let:builder>
-          <div {...builder} use:builder.action>
-            <Toggle class="h-6 aspect-square p-0 mr-5" bind:pressed={as_color}>
-              <Icon icon="mdi:color" class="w-4 h-4 opacity-40" />
-            </Toggle>
-          </div>
-        </Tooltip.Trigger>
+        <Tooltip.Trigger asChild >
+          {#snippet children({ builder })}
+                                            <div {...builder} use:builder.action>
+              <Toggle class="h-6 aspect-square p-0 mr-5" bind:pressed={as_color}>
+                <Icon icon="mdi:color" class="w-4 h-4 opacity-40" />
+              </Toggle>
+            </div>
+                                                    {/snippet}
+                                        </Tooltip.Trigger>
         <Tooltip.Content>Interpret as colour</Tooltip.Content>
       </Tooltip.Root>
     {/if}

@@ -7,16 +7,20 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import Spinner from "$lib/components/Spinner.svelte";
 
-  export let child: Item;
-  export let download: boolean = false;
+  interface Props {
+    child: Item;
+    download?: boolean;
+  }
+
+  let { child, download = false }: Props = $props();
   const dispatch = createEventDispatcher<{
     click: void;
     download: () => void;
   }>();
 
-  $: ext = child.name.split(".").at(-1);
+  let ext = $derived(child.name.split(".").at(-1));
 
-  let downloading = false;
+  let downloading = $state(false);
 
   const ext_icons: Record<string, string> = {
     anm: "material-symbols:animation",

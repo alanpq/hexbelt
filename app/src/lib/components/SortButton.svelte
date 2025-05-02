@@ -8,13 +8,18 @@
     desc: "mdi:sort-descending",
   } as const;
 
-  export let order: keyof typeof sort_icons | undefined;
+  interface Props {
+    order: keyof typeof sort_icons | undefined;
+    children?: import('svelte').Snippet;
+  }
+
+  let { order, children }: Props = $props();
 
   const dispatch = createEventDispatcher<{ click: void }>();
 </script>
 
 <Button variant="ghost" class="" on:click={() => dispatch("click")}>
-  <slot />
+  {@render children?.()}
   {#if order}
     <Icon icon={sort_icons[order]} class="ml-2 h-4 w-4" />
   {/if}

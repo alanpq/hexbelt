@@ -1,35 +1,32 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { decode_texture, type Texture } from "$lib/pkg/rust";
   import { cn } from "$lib/utils";
   import { Slider } from "$lib/components/ui/slider";
   import debounce from "lodash/debounce";
 
-  export let name: string | undefined = undefined;
-  export let data: Uint8Array | undefined = undefined;
-  export let mipmap: number = 0;
+  interface Props {
+    name?: string | undefined;
+    data?: Uint8Array | undefined;
+    mipmap?: number;
+  }
 
-  let max_mips = 1;
+  let { name = undefined, data = undefined, mipmap = $bindable(0) }: Props = $props();
 
-  let preview_canvas: null | HTMLCanvasElement = null;
-  let has_preview: boolean | string = false;
+  let max_mips = $state(1);
+
+  let preview_canvas: null | HTMLCanvasElement = $state(null);
+  let has_preview: boolean | string = $state(false);
 
   let mips: {
     image: ImageData;
     width: number;
     height: number;
     mipmaps: number;
-  }[] = [];
+  }[] = $state([]);
 
-  $: {
-    data;
-    mipmap;
-    debounce(drawPreview, 100)();
-  }
 
-  $: {
-    data;
-    mips = [];
-  }
 
   const drawPreview = () => {
     if (!preview_canvas || !data) return;
@@ -54,6 +51,15 @@
     has_preview = true;
     ctx?.putImageData(tex.image, 0, 0);
   };
+  run(() => {
+    data;
+    mipmap;
+    debounce(drawPreview, 100)();
+  });
+  run(() => {
+    data;
+    mips = [];
+  });
 </script>
 
 <div class="w-full max-h-[80%]">
@@ -72,7 +78,7 @@
     <canvas
       bind:this={preview_canvas}
       class="w-full h-full row-start-1 col-start-1 row-span-2 col-span-2 object-contain"
-    />
+></canvas>
     <span
       class="row-start-1 col-start-1 w-min h-min p-1 text-white mix-blend-difference"
       >{name ?? "??"}</span

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import {
     createTable,
     Render,
@@ -26,9 +28,13 @@
   import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher } from "svelte";
 
-  export let wad: WadTree;
-  export let data: Readable<Item[]>;
-  export let path: Writable<number[]>;
+  interface Props {
+    wad: WadTree;
+    data: Readable<Item[]>;
+    path: Writable<number[]>;
+  }
+
+  let { wad, data, path }: Props = $props();
   const dispatch = createEventDispatcher<{
     select: number | null;
   }>();
@@ -128,13 +134,15 @@
     }),
   ]);
 
-  let selected: null | number = null;
+  let selected: null | number = $state(null);
 
   const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
     table.createViewModel(columns);
 
   const { sortKeys } = pluginStates.sort;
-  $: $sortKeys;
+  run(() => {
+    $sortKeys;
+  });
 </script>
 
 <div class="rounded-md w-full">
@@ -146,39 +154,41 @@
             {#each headerRow.cells as cell (cell.id)}
               <Subscribe
                 attrs={cell.attrs()}
-                let:attrs
+                
                 props={cell.props()}
-                let:props
+                
               >
-                <Table.Head
-                  {...attrs}
-                  class={cn(
-                    "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]",
-                    cell.id == "icon" || cell.id == "actions" ? "w-0" : null,
-                  )}
-                >
-                  {#if cell.id === "size" || cell.id === "name" || cell.id === "children"}
-                    {@const order = $sortKeys.find((v, i) => v.id == cell.id)}
-                    <div
-                      class={cn("flex", cell.id !== "name" && "justify-end")}
-                    >
-                      <Button
-                        variant="ghost"
-                        class=""
-                        on:click={props.sort.toggle}
+                {#snippet children({ attrs, props })}
+                                <Table.Head
+                    {...attrs}
+                    class={cn(
+                      "py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]",
+                      cell.id == "icon" || cell.id == "actions" ? "w-0" : null,
+                    )}
+                  >
+                    {#if cell.id === "size" || cell.id === "name" || cell.id === "children"}
+                      {@const order = $sortKeys.find((v, i) => v.id == cell.id)}
+                      <div
+                        class={cn("flex", cell.id !== "name" && "justify-end")}
                       >
-                        <Render of={cell.render()} />
-                        <Icon
-                          icon={order ? sort_icons[order.order] : "mdi:sort"}
-                          class="ml-2 h-4 w-4"
-                        />
-                      </Button>
-                    </div>
-                  {:else}
-                    <Render of={cell.render()} />
-                  {/if}
-                </Table.Head>
-              </Subscribe>
+                        <Button
+                          variant="ghost"
+                          class=""
+                          on:click={props.sort.toggle}
+                        >
+                          <Render of={cell.render()} />
+                          <Icon
+                            icon={order ? sort_icons[order.order] : "mdi:sort"}
+                            class="ml-2 h-4 w-4"
+                          />
+                        </Button>
+                      </div>
+                    {:else}
+                      <Render of={cell.render()} />
+                    {/if}
+                  </Table.Head>
+                                              {/snippet}
+                            </Subscribe>
             {/each}
           </Table.Row>
         </Subscribe>
@@ -202,46 +212,52 @@
         <Table.Cell colspan={3} class="py-0 px-1 h-7">..</Table.Cell>
       </Table.Row>
       {#each $pageRows as row (row.id)}
-        <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-          <VirtualRow
-            {rowAttrs}
-            class={cn(
-              row.isData() && row.original.is_dir() && "cursor-pointer",
-              row.isData() && row.original.id === selected && "bg-muted/80",
-            )}
-            on:click={() => {
-              if (!row.isData()) return;
-              if (row.original.is_dir()) {
-                $path = [...$path, row.original.id];
-              } else {
-                selected = row.original.id;
-                dispatch("select", selected);
-              }
-            }}
-            let:inView
-          >
-            {#if inView}
-              {#each row.cells as cell (cell.id)}
-                <Subscribe attrs={cell.attrs()} let:attrs>
-                  <Table.Cell
-                    {...attrs}
-                    class="py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]"
-                  >
-                    {#if cell.id === "size" || cell.id === "children"}
-                      <div class="text-right font-medium">
-                        <Render of={cell.render()} />
-                      </div>
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Cell>
+        <Subscribe rowAttrs={row.attrs()} >
+          {#snippet children({ rowAttrs })}
+                    <VirtualRow
+              {rowAttrs}
+              class={cn(
+                row.isData() && row.original.is_dir() && "cursor-pointer",
+                row.isData() && row.original.id === selected && "bg-muted/80",
+              )}
+              on:click={() => {
+                if (!row.isData()) return;
+                if (row.original.is_dir()) {
+                  $path = [...$path, row.original.id];
+                } else {
+                  selected = row.original.id;
+                  dispatch("select", selected);
+                }
+              }}
+              
+            >
+              {#snippet children({ inView })}
+                        {#if inView}
+                  {#each row.cells as cell (cell.id)}
+                    <Subscribe attrs={cell.attrs()} >
+                      {#snippet children({ attrs })}
+                                    <Table.Cell
+                          {...attrs}
+                          class="py-0 px-1 h-7 text-ellipsis whitespace-nowrap overflow-hidden max-w-[50dvw]"
+                        >
+                          {#if cell.id === "size" || cell.id === "children"}
+                            <div class="text-right font-medium">
+                              <Render of={cell.render()} />
+                            </div>
+                          {:else}
+                            <Render of={cell.render()} />
+                          {/if}
+                        </Table.Cell>
+                                                        {/snippet}
+                                </Subscribe>
+                  {/each}
+                {:else}
+                  <div class="w-0 h-7"></div>
+                {/if}
+                                    {/snippet}
+                    </VirtualRow>
+                            {/snippet}
                 </Subscribe>
-              {/each}
-            {:else}
-              <div class="w-0 h-7"></div>
-            {/if}
-          </VirtualRow>
-        </Subscribe>
       {/each}
     </Table.Body>
   </Table.Root>

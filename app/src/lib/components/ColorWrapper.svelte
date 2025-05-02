@@ -1,9 +1,12 @@
 <script lang="ts">
   import { portal } from "svelte-portal";
 
-  export let wrapper;
-  export let isOpen;
-  export let isDialog;
+  let {
+    wrapper = $bindable(),
+    isOpen,
+    isDialog,
+    children
+  } = $props();
 </script>
 
 <div
@@ -14,7 +17,7 @@
   role={isDialog ? "dialog" : undefined}
   aria-label="color picker"
 >
-  <slot />
+  {@render children?.()}
 </div>
 
 <style>

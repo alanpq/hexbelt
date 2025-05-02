@@ -12,12 +12,16 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
 
-  export let wad: WadTree;
-  export let item: Item;
+  interface Props {
+    wad: WadTree;
+    item: Item;
+  }
+
+  let { wad, item }: Props = $props();
 
   let bin = stores.bin();
 
-  let downloading = false;
+  let downloading = $state(false);
 
   const load_chunk = (id: number) => {
     try {
@@ -53,17 +57,19 @@
     {/if}
   </Button>
   <DropdownMenu.Root>
-    <DropdownMenu.Trigger asChild let:builder>
-      <Button
-        variant="ghost"
-        builders={[builder]}
-        size="icon"
-        class="w-6 h-6 p-0"
-      >
-        <span class="sr-only">Open menu</span>
-        <Icon icon="lucide:ellipsis" class="h-4 w-4" />
-      </Button>
-    </DropdownMenu.Trigger>
+    <DropdownMenu.Trigger asChild >
+      {#snippet children({ builder })}
+            <Button
+          variant="ghost"
+          builders={[builder]}
+          size="icon"
+          class="w-6 h-6 p-0"
+        >
+          <span class="sr-only">Open menu</span>
+          <Icon icon="lucide:ellipsis" class="h-4 w-4" />
+        </Button>
+                {/snippet}
+        </DropdownMenu.Trigger>
     <DropdownMenu.Content>
       <DropdownMenu.Item
         on:click={() => {
@@ -83,5 +89,5 @@
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 {:else}
-  <div aria-hidden="true" class="w-6 h-6" />
+  <div aria-hidden="true" class="w-6 h-6"></div>
 {/if}

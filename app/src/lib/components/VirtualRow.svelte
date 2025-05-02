@@ -1,21 +1,37 @@
 <script lang="ts">
+  import { createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   import { cn } from "$lib/utils";
   import { onMount, onDestroy } from "svelte";
   import type { HTMLAttributes } from "svelte/elements";
 
   //type $$Props = HTMLAttributes<HTMLTableRowElement> & {
   //  "data-state"?: unknown;
-  //};
+  
 
-  export let rowAttrs;
-  export let root = undefined;
-  let className: HTMLAttributes<HTMLTableRowElement>["class"] = undefined;
-  export { className as class };
+  interface Props {
+    //};
+    rowAttrs: any;
+    root?: any;
+    class?: HTMLAttributes<HTMLTableRowElement>["class"];
+    children?: import('svelte').Snippet<[any]>;
+    [key: string]: any
+  }
+
+  let {
+    rowAttrs,
+    root = undefined,
+    class: className = undefined,
+    children,
+    ...rest
+  }: Props = $props();
+  
 
   let observer: IntersectionObserver | undefined = undefined;
 
-  let inView = false;
-  let this_element: HTMLElement | undefined = undefined;
+  let inView = $state(false);
+  let this_element: HTMLElement | undefined = $state(undefined);
 
   onMount(() => {
     if (!this_element) return;
@@ -41,9 +57,9 @@
   )}
   bind:this={this_element}
   {...rowAttrs}
-  {...$$restProps}
-  on:click
-  on:keydown
+  {...rest}
+  onclick={bubble('click')}
+  onkeydown={bubble('keydown')}
 >
-  <slot {inView} />
+  {@render children?.({ inView, })}
 </tr>

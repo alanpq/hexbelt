@@ -5,12 +5,17 @@
     type BinEntryValue,
   } from "$lib/pkg/rust";
   import { get_type } from ".";
-  export let value: BinEntryValue & { kind: "PropertyMapEntry" };
+  interface Props {
+    value: BinEntryValue & { kind: "PropertyMapEntry" };
+  }
+
+  let { value }: Props = $props();
+
+  const SvelteComponent = $derived(get_type(value.value.value.kind));
 </script>
 
 <!-- {JSON.stringify(value.value)} -->
-<svelte:component
-  this={get_type(value.value.value.kind)}
+<SvelteComponent
   value={value.value.value}
 />
 <!-- <span class="text-muted-foreground">{value.value}</span> -->

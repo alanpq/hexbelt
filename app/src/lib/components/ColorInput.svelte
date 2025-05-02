@@ -1,41 +1,58 @@
 <script lang="ts">
-  /** DOM element of the label wrapper */
-  export let labelElement: HTMLLabelElement;
+  import { preventDefault } from 'svelte/legacy';
 
-  /** hex color */
-  export let hex: string | undefined;
+  
 
-  /** input label */
-  export let label: string;
+  
 
-  /** input name, useful in a native form */
-  export let name: string | undefined = undefined;
+  
 
-  /* svelte-ignore unused-export-let /** indicator of the popup state */
-  export let isOpen: boolean;
+  
+
+  
+  interface Props {
+    /** DOM element of the label wrapper */
+    labelElement: HTMLLabelElement;
+    /** hex color */
+    hex: string | undefined;
+    /** input label */
+    label: string;
+    /** input name, useful in a native form */
+    name?: string | undefined;
+    /* svelte-ignore unused-export-let /** indicator of the popup state */
+    isOpen: boolean;
+  }
+
+  let {
+    labelElement = $bindable(),
+    hex,
+    label,
+    name = undefined,
+    isOpen
+  }: Props = $props();
 
   function noop() {
     /* prevent browser color picker from opening unless javascript is broken */
   }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events -->
 <label
   bind:this={labelElement}
-  on:click|preventDefault={noop}
-  on:mousedown|preventDefault={noop}
+  onclick={preventDefault(noop)}
+  onmousedown={preventDefault(noop)}
 >
   <div class="relative flex items-center justify-center w-20">
     <input
       type="color"
       {name}
       value={hex}
-      on:click|preventDefault={noop}
-      on:mousedown|preventDefault={noop}
+      onclick={preventDefault(noop)}
+      onmousedown={preventDefault(noop)}
       aria-haspopup="dialog"
     />
-    <div class="alpha w-20 h-4" />
-    <div class="color w-20 h-4" style:background={hex} />
+    <div class="alpha w-20 h-4"></div>
+    <div class="color w-20 h-4" style:background={hex}></div>
   </div>
 </label>
 
