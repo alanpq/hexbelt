@@ -1,8 +1,2 @@
-<script lang="ts">
-  import Icon from "@iconify/svelte";
-
-  import { Input } from "$lib/components/ui/input";
-  import { Button } from "$lib/components/ui/button";
-
-  import * as stores from "$lib/stores";
-</script>
+<h1>Welcome to SvelteKit</h1>
+<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
