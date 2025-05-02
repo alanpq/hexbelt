@@ -14,7 +14,7 @@
 <section
 	{...restProps}
 	class={cn(
-		'flex select-none flex-col items-center gap-2 rounded border border-dashed border-muted-foreground/30 p-3 text-center transition-colors',
+		'flex select-none flex-col items-center justify-center gap-2 rounded border border-dashed border-muted-foreground/30 p-3 text-center transition-colors',
 		hover && 'bg-foreground/5',
 		className
 	)}
