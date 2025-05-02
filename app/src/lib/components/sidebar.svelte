@@ -29,14 +29,18 @@
 
 <Sidebar.Root collapsible="icon">
 	<Sidebar.Content>
-		<Sidebar.Group class="pt-0">
+		<Sidebar.Group>
 			<Sidebar.GroupLabel class="flex pr-0">
 				<span class="flex-grow">hexbelt</span>
 				<Tooltip.Provider>
 					<Tooltip.Root>
 						<Tooltip.Trigger>
 							{#snippet child({ props })}
-								<button {...props} class="flex p-1 hover:text-foreground" onclick={toggleMode}>
+								<button
+									{...props}
+									class="-mt-0.5 flex p-1 hover:text-foreground"
+									onclick={toggleMode}
+								>
 									<Sun
 										class="size-[1.2em] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 									/>

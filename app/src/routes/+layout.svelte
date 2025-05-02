@@ -11,8 +11,8 @@
 <ModeWatcher />
 <Sidebar.Provider>
 	<AppSidebar />
-	<main>
-		<Sidebar.Trigger />
+	<main class="flex w-full flex-col p-5">
+		<Sidebar.Trigger class="mb-5" />
 		{@render children?.()}
 	</main>
 </Sidebar.Provider>
