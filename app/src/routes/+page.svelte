@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import FileDrop from '$lib/components/FileDrop.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -16,7 +17,12 @@
 			<Card.Description>Open .wad files</Card.Description>
 		</Card.Header>
 		<span class="flex-grow"></span>
-		<FileDrop class="m-5">
+		<FileDrop
+			class="m-5"
+			onFiles={(files) => {
+				goto('/wad');
+			}}
+		>
 			<p class="text-sm text-muted-foreground">Upload or drop a file</p>
 			<Button size="icon"><Upload /></Button>
 		</FileDrop>
@@ -27,7 +33,12 @@
 			<Card.Description>Browse .bin fields</Card.Description>
 		</Card.Header>
 		<span class="flex-grow"></span>
-		<FileDrop class="m-5">
+		<FileDrop
+			class="m-5"
+			onFiles={(files) => {
+				goto('/bin');
+			}}
+		>
 			<p class="text-sm text-muted-foreground">Upload or drop a file</p>
 			<Button size="icon"><Upload /></Button>
 		</FileDrop>
