@@ -310,10 +310,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@lucide/svelte@^0.506.0":
-  version "0.506.0"
-  resolved "https://registry.yarnpkg.com/@lucide/svelte/-/svelte-0.506.0.tgz#61e4e5f36be27660128b66dd405aa857617b7b9f"
-  integrity sha512-NW7KjDfGk4BdBeGhaMcz210mmCjV01ucAL2BsqPsXTBuhoVeh2ZiZMLS9oPmRYxxbA1JpJHkGvdTHsAuEIVjPQ==
+"@lucide/svelte@^0.507.0":
+  version "0.507.0"
+  resolved "https://registry.yarnpkg.com/@lucide/svelte/-/svelte-0.507.0.tgz#00dab3a0a1811cec60b39d2471a1da3e6aae068e"
+  integrity sha512-kXIg/2IHEo1bAwZG94fjA9O6+E3Sv5aQrW2yyPf4JvCYIUIF8DGLIQI4vfjoUyNq2dEX4cI33pZarzGOHr0npg==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -716,10 +716,10 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-bits-ui@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-1.4.3.tgz#4bc68542e5900974bbadb67ff205707742de0dfb"
-  integrity sha512-7D85ZBbUgf/ihL2to5McGs0oGZo0T274NX2Aejak+Ycj69jSqAvGPyTEFkKdf0NMZIxuo5Fz4c4jrljPvpUpMg==
+bits-ui@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-1.4.4.tgz#3d728ccf9fb206ba4e38b836319e77dd8dc5b39b"
+  integrity sha512-62hTW3LRJzb/lU4SAEr+x9GLVTS7lBH+0onOT+UHMghfyQc5TbeuoYBsmKbsLwVnEzCwjAfWBVz51kFYgBJ74w==
   dependencies:
     "@floating-ui/core" "^1.6.4"
     "@floating-ui/dom" "^1.6.7"

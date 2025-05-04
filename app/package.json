@@ -26,7 +26,7 @@
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.16",
         "autoprefixer": "^10.4.20",
-        "bits-ui": "^1.4.3",
+        "bits-ui": "^1.4.4",
         "clsx": "^2.1.1",
         "eslint": "^9.18.0",
         "eslint-config-prettier": "^10.0.1",
@@ -48,7 +48,7 @@
     },
     "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
     "dependencies": {
-        "@lucide/svelte": "^0.506.0",
+        "@lucide/svelte": "^0.507.0",
         "mode-watcher": "^1.0.5",
         "runed": "^0.26.0"
     }

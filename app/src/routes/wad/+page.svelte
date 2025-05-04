@@ -1,16 +1,20 @@
 <script lang="ts">
+	import { Download, Eye, File as FileIcon, Folder, Table2, Undo2, Upload } from '@lucide/svelte';
+
 	import FileDrop from '$lib/components/FileDrop.svelte';
+	import TableEntry from './TableEntry.svelte';
+
 	import { Button } from '$lib/components/ui/button';
-	import { File as FileIcon, Folder, Table2, Undo2, Upload } from '@lucide/svelte';
-	import { fade } from 'svelte/transition';
+	import * as ContextMenu from '$lib/components/ui/context-menu';
+	import TooltipContent from '$lib/components/ui/tooltip/tooltip-content.svelte';
 
 	import * as context from '$lib/context';
-	import { toast } from 'svelte-sonner';
-	import { open_wad } from '$lib/pkg/rust';
-	import { cn } from '$lib/utils';
+
 	import type { Component } from 'svelte';
-	import TableEntry from './TableEntry.svelte';
-	import TooltipContent from '$lib/components/ui/tooltip/tooltip-content.svelte';
+	import { fade } from 'svelte/transition';
+	import { toast } from 'svelte-sonner';
+
+	import { open_wad } from '$lib/pkg/rust';
 
 	let ctx: ReturnType<typeof context.wad.get> = $state({ wad: null, path: [] });
 	ctx = context.wad.getOr({ wad: null, path: [] });
@@ -80,21 +84,41 @@
 				{@const ext = item.name.split('.').at(-1)}
 				{@const Icon = (ext !== undefined && file_icons[ext]) || (is_dir ? Folder : FileIcon)}
 				<li class="contents">
-					<TableEntry
-						selected={item.id === selected}
-						directory={is_dir}
-						onclick={() => {
+					<ContextMenu.Root
+						onOpenChange={(open) => {
+							if (!open) return;
 							selected = item.id;
 						}}
-						ondblclick={() => {
-							if (is_dir) {
-								ctx.path.push(item.id);
-							}
-						}}
 					>
-						<Icon class="size-4" />
-						{item.name}
-					</TableEntry>
+						<ContextMenu.Trigger>
+							{#snippet child({ props })}
+								<TableEntry
+									{...props}
+									selected={item.id === selected}
+									directory={is_dir}
+									onclick={() => {
+										selected = item.id;
+									}}
+									ondblclick={() => {
+										if (is_dir) {
+											ctx.path.push(item.id);
+										}
+									}}
+								>
+									<Icon class="size-4" />
+									{item.name}
+								</TableEntry>
+							{/snippet}
+						</ContextMenu.Trigger>
+						<ContextMenu.Content>
+							<ContextMenu.Item class="flex gap-2" disabled={is_dir}>
+								<Eye class="size-4" /> Preview
+							</ContextMenu.Item>
+							<ContextMenu.Item class="flex gap-2">
+								<Download class="size-4" /> Download
+							</ContextMenu.Item>
+						</ContextMenu.Content>
+					</ContextMenu.Root>
 				</li>
 			{/each}
 		</ul>
