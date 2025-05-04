@@ -1,5 +1,20 @@
 <script lang="ts">
-	import { Download, Eye, File as FileIcon, Folder, Table2, Undo2, Upload } from '@lucide/svelte';
+	import {
+		Box,
+		Download,
+		Eye,
+		File as FileIcon,
+		FileImage,
+		Folder,
+		LetterText,
+		PersonStanding,
+		SendToBack,
+		Skull,
+		Table2,
+		Undo2,
+		Image as ImageIcon,
+		Upload
+	} from '@lucide/svelte';
 
 	import FileDrop from '$lib/components/FileDrop.svelte';
 	import TableEntry from './TableEntry.svelte';
@@ -22,8 +37,21 @@
 	let selected = $state<number | null>(null);
 
 	const file_icons: Record<any, Component> = {
-		bin: Table2
+		anm: SendToBack,
+		bin: Table2,
+		dds: ImageIcon,
+		jpg: ImageIcon,
+		png: ImageIcon,
+		scb: Box,
+		sco: Box,
+		skl: Skull,
+		skn: PersonStanding,
+		stringtable: LetterText,
+		svg: FileImage,
+		tex: ImageIcon
 	};
+
+	const previewable = new Set(['dds', 'jpg', 'png', 'tex', 'svg']);
 
 	let view = $derived.by(() => {
 		if (!ctx.wad) return [];
@@ -111,7 +139,10 @@
 							{/snippet}
 						</ContextMenu.Trigger>
 						<ContextMenu.Content>
-							<ContextMenu.Item class="flex gap-2" disabled={is_dir}>
+							<ContextMenu.Item
+								class="flex gap-2"
+								disabled={is_dir || !ext || !previewable.has(ext)}
+							>
 								<Eye class="size-4" /> Preview
 							</ContextMenu.Item>
 							<ContextMenu.Item class="flex gap-2">
