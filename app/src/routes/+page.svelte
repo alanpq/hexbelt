@@ -8,7 +8,7 @@
 
 <article class="m-auto grid w-full max-w-[50ch] grid-cols-2 gap-4">
 	<section class="col-span-2 mb-8 flex flex-col gap-0 text-center">
-		<h1 class=" text-6xl tracking-tighter">hexbelt</h1>
+		<h1 class="text-6xl tracking-tighter">hexbelt</h1>
 		<h2 class="text-muted-foreground">Useful tools for League of Legends custom skin creation.</h2>
 	</section>
 	<Card.Root class="flex flex-col">
