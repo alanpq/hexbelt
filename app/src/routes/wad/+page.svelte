@@ -29,7 +29,7 @@
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
 
-	import { open_wad } from '$lib/pkg/rust';
+	import { Item, open_wad } from '$lib/pkg/rust';
 
 	let ctx: ReturnType<typeof context.wad.get> = $state({ wad: null, path: [] });
 	ctx = context.wad.getOr({ wad: null, path: [] });
@@ -51,6 +51,28 @@
 		tex: ImageIcon
 	};
 
+	const load_chunk = (id: number) => {
+		try {
+			if (!ctx.wad) throw new Error('Wad not loaded!');
+			return ctx.wad.load_chunk_data(id);
+		} catch (e) {
+			console.error('Failed to download file', e);
+			toast.error(`Failed to download file - ${e}`);
+			return null;
+		}
+	};
+	const download = (item: Item) => {
+		const data = load_chunk(item.id);
+		if (!data) return;
+		const url = URL.createObjectURL(
+			new Blob([data.buffer as BlobPart], { type: 'application/octet-stream' })
+		);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = item.name;
+		link.click();
+	};
+
 	const previewable = new Set(['dds', 'jpg', 'png', 'tex', 'svg']);
 
 	let view = $derived.by(() => {
@@ -61,8 +83,6 @@
 			.map((i) => ctx.wad?.get(i))
 			.filter((c) => !!c);
 	});
-
-	let file: File | null = $state(null);
 </script>
 
 {#if !ctx.wad}
@@ -70,7 +90,6 @@
 		<FileDrop
 			class="m-5 flex-grow"
 			onFiles={async (files) => {
-				file = files.item(0);
 				try {
 					ctx.wad = null;
 					ctx.wad = await open_wad(files[0]);
@@ -139,13 +158,21 @@
 							{/snippet}
 						</ContextMenu.Trigger>
 						<ContextMenu.Content>
+							<!-- TODO: file previews -->
 							<ContextMenu.Item
 								class="flex gap-2"
 								disabled={is_dir || !ext || !previewable.has(ext)}
 							>
 								<Eye class="size-4" /> Preview
 							</ContextMenu.Item>
-							<ContextMenu.Item class="flex gap-2">
+							<!-- TODO: folder downloading -->
+							<ContextMenu.Item
+								class="flex gap-2"
+								disabled={is_dir}
+								onclick={() => {
+									download(item);
+								}}
+							>
 								<Download class="size-4" /> Download
 							</ContextMenu.Item>
 						</ContextMenu.Content>
