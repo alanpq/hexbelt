@@ -6,7 +6,7 @@
 
 	import * as Sidebar from '$lib/components/ui/sidebar';
 	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { hashtables_ready } from '$lib/hashtables';
+	import { hashtables_ready } from '$lib/context';
 	import { fade } from 'svelte/transition';
 	import type { Component } from 'svelte';
 

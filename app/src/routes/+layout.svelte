@@ -9,7 +9,7 @@
 	import { toast } from 'svelte-sonner';
 	import { base } from '$app/paths';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { hashtables_ready } from '$lib/hashtables';
+	import { hashtables_ready } from '$lib/context';
 
 	let { children } = $props();
 
