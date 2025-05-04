@@ -1,14 +1,23 @@
 <script lang="ts">
-	import { PackageOpen, House, Table2, Sun, Moon } from '@lucide/svelte';
+	import { PackageOpen, House, Table2, Sun, Moon, LoaderCircle } from '@lucide/svelte';
+	import { toggleMode } from 'mode-watcher';
+
+	import { page } from '$app/state';
 
 	import * as Sidebar from '$lib/components/ui/sidebar';
 	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { page } from '$app/state';
-	import Lightswitch from './Lightswitch.svelte';
-	import Button from './ui/button/button.svelte';
-	import { toggleMode } from 'mode-watcher';
+	import { hashtables_ready } from '$lib/hashtables';
+	import { fade } from 'svelte/transition';
+	import type { Component } from 'svelte';
 
-	const items = [
+	const hashtables = hashtables_ready.get();
+
+	const items: {
+		title: string;
+		url: string;
+		icon: Component;
+		spinner?: keyof typeof hashtables;
+	}[] = [
 		{
 			title: 'Home',
 			url: '/',
@@ -17,12 +26,14 @@
 		{
 			title: 'Wad Walker',
 			url: '/wad',
-			icon: PackageOpen
+			icon: PackageOpen,
+			spinner: 'wad'
 		},
 		{
 			title: 'Bin Explorer',
 			url: '/bin',
-			icon: Table2
+			icon: Table2,
+			spinner: 'bin'
 		}
 	];
 </script>
@@ -64,7 +75,12 @@
 								{#snippet child({ props })}
 									<a href={item.url} {...props}>
 										<item.icon />
-										<span>{item.title}</span>
+										<span class="flex-grow">{item.title}</span>
+										{#if item.spinner !== undefined && !hashtables[item.spinner]}
+											<span transition:fade>
+												<LoaderCircle class="size-4 animate-spin" />
+											</span>
+										{/if}
 									</a>
 								{/snippet}
 								{#snippet tooltipContent()}

@@ -2,20 +2,22 @@
 	import '../app.css';
 	import { ModeWatcher } from 'mode-watcher';
 	import init, { load_bin_hashtables, load_wad_hashtables } from '$lib/pkg/rust';
-	import * as hashtables from '$lib/hashtables';
 
 	import * as Sidebar from '$lib/components/ui/sidebar';
 	import AppSidebar from '$lib/components/sidebar.svelte';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { base } from '$app/paths';
-	import { writable, type Writable } from 'svelte/store';
 	import { Toaster } from '$lib/components/ui/sonner';
+	import { hashtables_ready } from '$lib/hashtables';
 
 	let { children } = $props();
 
-	const wad_ready = hashtables.wad_ready.set(writable(false));
-	const bin_ready = hashtables.bin_ready.set(writable(false));
+	const hashtables = $state({
+		bin: false,
+		wad: false
+	});
+	hashtables_ready.set(hashtables);
 
 	onMount(async () => {
 		try {
@@ -28,13 +30,9 @@
 			console.error('Failed to load WASM module:', e);
 		}
 
-		const load_hashes = (
-			func: typeof load_bin_hashtables,
-			name: string,
-			store: Writable<boolean>
-		) => {
+		const load_hashes = async (func: typeof load_bin_hashtables, name: string) => {
 			toast.info(`Loading ${name} hashtables...`, {});
-			func(`${base}/hashes`).then((count) => {
+			await func(`${base}/hashes`).then((count) => {
 				if (count <= 0) {
 					toast.error(`${name} Hashtables were empty! Could not load any hashes.`);
 				} else if (count <= 1000) {
@@ -42,11 +40,10 @@
 				} else {
 					toast.success(`Loaded ${count.toLocaleString()} ${name} hashes!`, {});
 				}
-				store.set(true);
 			});
 		};
-		load_hashes(load_wad_hashtables, 'Wad', wad_ready);
-		load_hashes(load_bin_hashtables, 'Bin', bin_ready);
+		load_hashes(load_wad_hashtables, 'Wad').then(() => (hashtables.wad = true));
+		load_hashes(load_bin_hashtables, 'Bin').then(() => (hashtables.bin = true));
 	});
 </script>
 
