@@ -20,7 +20,9 @@
 	import TableEntry from './TableEntry.svelte';
 
 	import { Button } from '$lib/components/ui/button';
+	import * as Sidebar from '$lib/components/ui/sidebar';
 	import * as ContextMenu from '$lib/components/ui/context-menu';
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import TooltipContent from '$lib/components/ui/tooltip/tooltip-content.svelte';
 
 	import * as context from '$lib/context';
@@ -81,6 +83,35 @@
 			.filter((c) => !!c);
 	});
 </script>
+
+<header class="flex flex-row gap-4 items-center">
+	<Sidebar.Trigger />
+	{#if ctx.wad}
+		<Breadcrumb.Root>
+			<Breadcrumb.List>
+				<Breadcrumb.Item>
+					<Breadcrumb.Link
+						class="cursor-pointer"
+						onclick={() => {
+							ctx.path = [];
+						}}>/</Breadcrumb.Link
+					>
+				</Breadcrumb.Item>
+				{#each ctx.path as path, i}
+					<Breadcrumb.Separator />
+					<Breadcrumb.Item>
+						<Breadcrumb.Link
+							class="cursor-pointer"
+							onclick={() => {
+								ctx.path.splice(i + 1);
+							}}>{ctx.wad.get(path)?.name}</Breadcrumb.Link
+						>
+					</Breadcrumb.Item>
+				{/each}
+			</Breadcrumb.List>
+		</Breadcrumb.Root>
+	{/if}
+</header>
 
 {#if !ctx.wad}
 	<div class="flex flex-grow" out:fade={{ duration: 100 }}>

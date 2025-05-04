@@ -55,7 +55,6 @@
 <Sidebar.Provider>
 	<AppSidebar />
 	<main class="flex w-full flex-col p-5">
-		<Sidebar.Trigger />
 		{@render children?.()}
 	</main>
 </Sidebar.Provider>
