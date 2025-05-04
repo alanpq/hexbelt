@@ -6,4 +6,5 @@ export const hashtables_ready = new Context<{ wad: boolean; bin: boolean }>('has
 export const wad = new Context<{
 	wad: WadTree | null;
 	path: number[];
+	selected: number | null;
 }>('wad');

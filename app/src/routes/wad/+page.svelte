@@ -31,10 +31,7 @@
 
 	import { Item, open_wad } from '$lib/pkg/rust';
 
-	let ctx: ReturnType<typeof context.wad.get> = $state({ wad: null, path: [] });
-	ctx = context.wad.getOr({ wad: null, path: [] });
-
-	let selected = $state<number | null>(null);
+	let ctx = context.wad.get();
 
 	const file_icons: Record<any, Component> = {
 		anm: SendToBack,
@@ -134,17 +131,17 @@
 					<ContextMenu.Root
 						onOpenChange={(open) => {
 							if (!open) return;
-							selected = item.id;
+							ctx.selected = item.id;
 						}}
 					>
 						<ContextMenu.Trigger>
 							{#snippet child({ props })}
 								<TableEntry
 									{...props}
-									selected={item.id === selected}
+									selected={item.id === ctx.selected}
 									directory={is_dir}
 									onclick={() => {
-										selected = item.id;
+										ctx.selected = item.id;
 									}}
 									ondblclick={() => {
 										if (is_dir) {

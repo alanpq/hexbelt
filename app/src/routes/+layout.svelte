@@ -9,15 +9,18 @@
 	import { toast } from 'svelte-sonner';
 	import { base } from '$app/paths';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { hashtables_ready } from '$lib/context';
+	import * as context from '$lib/context';
 
 	let { children } = $props();
+
+	let wad: ReturnType<typeof context.wad.get> = $state({ wad: null, path: [], selected: null });
+	context.wad.set(wad);
 
 	const hashtables = $state({
 		bin: false,
 		wad: false
 	});
-	hashtables_ready.set(hashtables);
+	context.hashtables_ready.set(hashtables);
 
 	onMount(async () => {
 		try {
