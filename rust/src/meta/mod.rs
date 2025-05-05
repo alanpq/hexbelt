@@ -10,19 +10,11 @@ use wasm_bindgen::prelude::*;
 
 use crate::{log_object, utils::AsJSError, BIN_FIELDS, BIN_PATHS, BIN_TYPES};
 
-#[wasm_bindgen]
-pub struct Bin {
-    pub version: u32,
-    #[wasm_bindgen(getter_with_clone)]
-    pub data: Data,
-}
+mod node;
+mod tree;
 
-#[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct Data {
-    pub tree: TreeNode,
-    pub objects: HashMap<u32, BinEntry>,
-}
+pub use node::*;
+pub use tree::*;
 
 #[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
@@ -118,13 +110,16 @@ impl BinEntryValue {
                 Some(
                     v.entries
                         .iter()
-                        .map(|(k, v)| BinEntry {
-                            name: None,
-                            value: BinEntryValue::PropertyMapEntry {
-                                key: Box::new(BinEntryValue::from_prop_value(&k.0).0),
-                                value: Box::new(BinEntryValue::from_prop_value(v).0),
-                            },
-                            children: vec![],
+                        .map(|(k, v)| {
+                            let value = BinEntryValue::from_prop_value(v);
+                            BinEntry {
+                                name: None,
+                                value: BinEntryValue::PropertyMapEntry {
+                                    key: Box::new(BinEntryValue::from_prop_value(&k.0).0),
+                                    value: Box::new(value.0),
+                                },
+                                children: value.1.unwrap_or_default(),
+                            }
                         })
                         .collect(),
                 ),
@@ -213,95 +208,5 @@ impl From<meta::BinTreeObject> for BinEntry {
             value: BinEntryValue::Object,
             children: obj.properties.values().map_into().collect(),
         }
-    }
-}
-
-#[wasm_bindgen]
-impl Bin {
-    #[wasm_bindgen(js_name = "from_bytes")]
-    pub fn from_bytes_js(bytes: Box<[u8]>) -> Result<Bin, JsValue> {
-        Self::from_bytes(&bytes).map_err(AsJSError::into_js_error)
-    }
-}
-
-#[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-#[serde(tag = "kind", content = "value")]
-pub enum TreeNode {
-    Namespace(String, HashMap<String, TreeNode>),
-    Object(String, u32),
-}
-
-impl TreeNode {
-    fn insert_object(&mut self, obj: &BinEntry, obj_hash: u32) {
-        let Some(name) = &obj.name else {
-            return;
-        };
-        tracing::debug!("PATH = {name}");
-        let components = name.split('/').collect_vec();
-        self.insert(&components, obj_hash);
-    }
-
-    fn insert(&mut self, path: &[&str], obj: u32) {
-        match path.split_first() {
-            Some((first, rest)) => match self {
-                Self::Namespace(_, children) => {
-                    let first = first.to_string();
-                    let child = children
-                        .entry(first.clone())
-                        .or_insert_with(|| match rest.len() {
-                            0 => Self::Object(first, obj),
-                            _ => Self::Namespace(first, HashMap::new()),
-                        });
-                    child.insert(rest, obj);
-                }
-                Self::Object(name, id) => {
-                    tracing::warn!("Cannot insert into a leaf node path: \n\npath = {path:?}\n\nself = {self:?}\n\nobj = {obj:?}");
-                }
-            },
-            None => {
-                tracing::debug!("called insert with no path left");
-            }
-        }
-    }
-}
-
-impl Bin {
-    pub fn from_bytes(bytes: &[u8]) -> Result<Self, meta::Error> {
-        // tracing::debug!("reading bin file ({} bytes)...", bytes.len());
-        let bin = BinTree::from_reader(&mut Cursor::new(bytes))?;
-
-        let objects = bin
-            .objects
-            .into_iter()
-            .map(|(k, v)| (k, v.into()))
-            .collect::<HashMap<_, _>>();
-
-        let mut root = TreeNode::Namespace("<root>".into(), HashMap::new());
-        for (hash, obj) in objects.iter() {
-            root.insert_object(obj, *hash);
-        }
-
-        Ok(Bin {
-            version: bin.version,
-
-            data: Data {
-                tree: root,
-                objects: objects
-                    .into_iter()
-                    .map(|(k, mut v)| {
-                        if let Some(name) = v.name.as_ref().and_then(|n| {
-                            n.rsplit_once('/').map(|(l, r)| match r.is_empty() {
-                                true => l.to_string(),
-                                false => r.to_string(),
-                            })
-                        }) {
-                            v.name.replace(name);
-                        }
-                        (k, v)
-                    })
-                    .collect(),
-            },
-        })
     }
 }
