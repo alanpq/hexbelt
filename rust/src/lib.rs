@@ -60,6 +60,7 @@ extern "C" {
 static mut WAD_HASHTABLE: Option<HashTable> = None;
 static mut BIN_FIELDS: Option<HashTable> = None;
 static mut BIN_PATHS: Option<HashTable> = None;
+static mut BIN_TYPES: Option<HashTable<u32>> = None;
 
 async fn read_file(file: File) -> Result<Vec<u8>, JsValue> {
     let promise = js_sys::Promise::new(&mut move |res, _rej| {
@@ -116,6 +117,10 @@ pub async fn load_bin_hashtables(base: String) -> Result<usize, JsValue> {
     let mut table = HashTable::new();
     count += table.load(&base, ["hashes.binentries.txt"]).await?;
     unsafe { BIN_PATHS.replace(table) };
+
+    let mut table = HashTable::new();
+    count += table.load(&base, ["hashes.bintypes.txt"]).await?;
+    unsafe { BIN_TYPES.replace(table) };
 
     Ok(count)
 }

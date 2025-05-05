@@ -8,7 +8,7 @@ use serde_json::Value;
 use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
 
-use crate::{log_object, utils::AsJSError, BIN_FIELDS, BIN_PATHS};
+use crate::{log_object, utils::AsJSError, BIN_FIELDS, BIN_PATHS, BIN_TYPES};
 
 #[wasm_bindgen]
 pub struct Bin {
@@ -72,14 +72,19 @@ pub enum BinEntryValue {
     PropertyContainer,
     PropertyUnorderedContainer,
     PropertyMap,
+    #[serde(rename_all = "camelCase")]
     PropertyMapEntry {
         key: Box<BinEntryValue>,
         value: Box<BinEntryValue>,
     },
+    #[serde(rename_all = "camelCase")]
     PropertyStruct {
+        class_name: Option<String>,
         class: String,
     },
+    #[serde(rename_all = "camelCase")]
     PropertyEmbedded {
+        class_name: Option<String>,
         class: String,
     },
 }
@@ -126,12 +131,17 @@ impl BinEntryValue {
             ),
             PropertyValueEnum::Struct(v) => (
                 BinEntryValue::PropertyStruct {
+                    class_name: unsafe { BIN_TYPES.as_ref() }
+                        .and_then(|types| types.try_resolve_path(v.class_hash)),
+
                     class: v.class_hash.to_string(),
                 },
                 Some(v.properties.values().map_into().collect()),
             ),
             PropertyValueEnum::Embedded(v) => (
                 BinEntryValue::PropertyEmbedded {
+                    class_name: unsafe { BIN_TYPES.as_ref() }
+                        .and_then(|types| types.try_resolve_path(v.0.class_hash)),
                     class: v.0.class_hash.to_string(),
                 },
                 Some(v.0.properties.values().map_into().collect()),

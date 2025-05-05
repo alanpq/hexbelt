@@ -1,3 +1,4 @@
+use std::hash::Hash;
 use std::{collections::HashMap, sync::Mutex};
 use tracing::info;
 use wasm_bindgen::prelude::*;
@@ -6,12 +7,27 @@ use wasm_bindgen_futures::JsFuture;
 // use walkdir::WalkDir;
 
 #[derive(Debug, Clone, Default)]
-pub struct HashTable {
+pub struct HashTable<T = u64> {
     is_loaded: bool,
-    items: HashMap<u64, String>,
+    items: HashMap<T, String>,
 }
 
-impl HashTable {
+pub trait FromStrRadix: Sized {
+    fn from_str_radix(src: &str, radix: u32) -> Result<Self, std::num::ParseIntError>;
+}
+
+impl FromStrRadix for u64 {
+    fn from_str_radix(src: &str, radix: u32) -> Result<Self, std::num::ParseIntError> {
+        u64::from_str_radix(src, radix)
+    }
+}
+impl FromStrRadix for u32 {
+    fn from_str_radix(src: &str, radix: u32) -> Result<Self, std::num::ParseIntError> {
+        u32::from_str_radix(src, radix)
+    }
+}
+
+impl<T: Eq + Hash + FromStrRadix> HashTable<T> {
     pub fn new() -> Self {
         HashTable {
             is_loaded: false,
@@ -19,7 +35,7 @@ impl HashTable {
         }
     }
 
-    pub fn try_resolve_path(&self, path_hash: u64) -> Option<String> {
+    pub fn try_resolve_path(&self, path_hash: T) -> Option<String> {
         self.items.get(&path_hash).cloned()
     }
 
@@ -69,7 +85,7 @@ impl HashTable {
             let hash = components
                 .next()
                 .ok_or(JsValue::from_str("failed to read hash"))?;
-            let hash = u64::from_str_radix(hash, 16)
+            let hash = T::from_str_radix(hash, 16)
                 .map_err(|e| JsValue::from_str(&format!("failed to convert hash - {e:?}")))?;
             let path = itertools::join(components, " ");
 
