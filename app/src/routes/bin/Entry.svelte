@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Data, TreeNode, BinEntryValue, BinEntry } from '$lib/pkg/rust';
+	import type { Data, BinEntryValue, BinEntry } from '$lib/pkg/rust';
 	import type { Component } from 'svelte';
 
 	import * as objects from './objects';

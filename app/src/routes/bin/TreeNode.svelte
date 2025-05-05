@@ -10,20 +10,6 @@
 	import * as objects from './objects';
 	import Entry from './Entry.svelte';
 
-	const obj_types: { [K in BinEntryValue['kind']]?: Component } = {
-		Object: objects.Object,
-		Namespace: undefined,
-		PropertyJSValue: undefined,
-		PropertyNone: undefined,
-		PropertyOptional: undefined,
-		PropertyContainer: undefined,
-		PropertyUnorderedContainer: undefined,
-		PropertyMap: undefined,
-		PropertyMapEntry: undefined,
-		PropertyStruct: undefined,
-		PropertyEmbedded: undefined
-	};
-
 	let {
 		tree,
 		node,
@@ -54,9 +40,11 @@
 				<Folder class="mr-1" />
 				{name}
 			</Button>
-			<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
-				>Namespace</span
+			<span
+				class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
 			>
+				Namespace
+			</span>
 		{/if}
 		{#if expanded}
 			<ul
