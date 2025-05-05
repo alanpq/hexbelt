@@ -50,14 +50,14 @@
 			<CollapseIcon />
 			<KindIcon class="mr-1" />
 			{entry.name}
+			{#if entries.length > 1}
+				<span class="text-right text-sm tracking-tighter text-muted-foreground">
+					({entries.length})
+				</span>
+			{/if}
 		</Button>
 		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card">
 			{entry.value.kind.replace('Property', '')}
-		</span>
-		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card">
-			{entry.children.length > 0
-				? `${entry.children.length} item${entry.children.length > 1 ? 's' : ''}`
-				: 'empty'}
 		</span>
 	{/if}
 	{#if expanded}
