@@ -10,11 +10,14 @@
 	import { base } from '$app/paths';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import * as context from '$lib/context';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	let { children } = $props();
 
 	let wad: ReturnType<typeof context.wad.get> = $state({ wad: null, path: [], selected: null });
 	context.wad.set(wad);
+	let bin: ReturnType<typeof context.bin.get> = $state({ bin: null, expanded: new SvelteSet() });
+	context.bin.set(bin);
 
 	const hashtables = $state({
 		bin: false,
