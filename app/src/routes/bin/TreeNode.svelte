@@ -39,6 +39,7 @@
 
 {#if node.kind === 'Namespace'}
 	{@const [name, keys] = node.value}
+	{@const entries = Object.entries(keys)}
 	<li class={cn('col-span-full row-span-1 grid grid-cols-subgrid items-center', className)}>
 		{#if parent !== undefined}
 			<Button
@@ -53,13 +54,18 @@
 				<Folder />
 				{name}
 			</Button>
-			<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground hover:bg-card"
+			<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
 				>Namespace</span
 			>
 		{/if}
 		{#if expanded}
-			<ul class="col-span-full row-span-1 ml-2 grid grid-cols-subgrid">
-				{#each Object.entries(keys) as [key, node]}
+			<ul
+				class={cn(
+					'col-span-full row-span-1 ml-2 grid grid-cols-subgrid',
+					entries.length > 1 && 'border-l'
+				)}
+			>
+				{#each entries as [key, node]}
 					<Self {tree} {node} parent={id} />
 				{/each}
 			</ul>

@@ -56,9 +56,9 @@
 	</span>
 	<span
 		class={cn(
-			'flex h-full items-center p-1 px-2 text-muted-foreground transition-colors hover:bg-card',
-			colorClass,
-			colorClass && 'opacity-50'
+			'flex h-full items-center p-1 px-2 text-muted-foreground transition-colors hover:bg-card'
+			// colorClass,
+			// colorClass && 'opacity-50'
 		)}
 	>
 		{inner.kind}
@@ -72,11 +72,11 @@
 	>
 		{#if inner.kind == 'String'}
 			<!-- "{inner.value}" -->
-			<Input disabled value={inner.value} />
+			<Input value={inner.value} />
 		{:else if isNum}
-			<Input disabled value={inner.value} />
+			<Input value={inner.value} />
 		{:else if inner.kind == 'Bool' || inner.kind == 'BitBool'}
-			<Checkbox disabled value={inner.value} />
+			<Checkbox value={inner.value} />
 		{:else if inner.kind == 'Hash'}
 			>0x{inner.value.toString(16)}
 		{:else if inner.kind == 'ObjectLink'}
@@ -85,21 +85,11 @@
 			<!-- <Color color={inner.value} /> -->
 		{:else if is_vec(inner)}
 			{#each inner.value as i}
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						{#snippet child({ props })}
-							<div {...props}>
-								<Input
-									type="text"
-									disabled
-									class="h-full overflow-clip text-ellipsis rounded-sm bg-secondary px-1.5 font-mono text-cyan-300"
-									value={i.toString().length < 4 ? i.toPrecision(4) : i}
-								/>
-							</div>
-						{/snippet}
-					</Tooltip.Trigger>
-					<Tooltip.Content>{i}</Tooltip.Content>
-				</Tooltip.Root>
+				<Input
+					type="text"
+					class="overflow-clip text-ellipsis px-1.5 font-mono text-cyan-300"
+					value={i.toString().length < 4 ? i.toPrecision(4) : i}
+				/>
 			{/each}
 		{:else}
 			Unknown js '{inner.kind}' - {JSON.stringify(inner.value)}

@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import type { Data, TreeNode, BinEntryValue, BinEntry } from '$lib/pkg/rust';
 	import { ChevronDown, ChevronRight, Folder } from '@lucide/svelte';
-	import type { Component } from 'svelte';
+	import { onMount, type Component } from 'svelte';
 
 	import * as context from '$lib/context';
 	import Node from '../TreeNode.svelte';
@@ -24,7 +24,7 @@
 	);
 	let Icon = $derived(expanded ? ChevronDown : ChevronRight);
 
-	let keys = entry.children;
+	let entries = entry.children;
 </script>
 
 <li class={cn('col-span-full row-span-1 grid grid-cols-subgrid items-center', className)}>
@@ -42,13 +42,18 @@
 			<Folder />
 			{entry.name}
 		</Button>
-		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground hover:bg-card"
+		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
 			>{entry.value.kind.replace('Property', '')}</span
 		>
 	{/if}
 	{#if expanded}
-		<ul class="col-span-full row-span-1 ml-2 grid grid-cols-subgrid border-l">
-			{#each Object.entries(keys) as [key, entry]}
+		<ul
+			class={cn(
+				'col-span-full row-span-1 ml-2 grid grid-cols-subgrid',
+				entries.length > 1 && 'border-l'
+			)}
+		>
+			{#each entries as entry}
 				<Entry {tree} {entry} parent={id} />
 			{/each}
 		</ul>
