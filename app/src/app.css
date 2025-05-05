@@ -72,6 +72,15 @@
 		font-family: 'iosevka-etoile';
 		src: url('/fonts/IosevkaEtoile-Regular.woff2') format('woff2');
 		font-display: swap;
+		font-weight: normal;
+		font-style: normal;
+	}
+	@font-face {
+		font-family: 'iosevka-etoile';
+		src: url('/fonts/IosevkaEtoile-Bold.woff2') format('woff2');
+		font-display: swap;
+		font-weight: bold;
+		font-style: normal;
 	}
 
 	* {
@@ -127,4 +136,3 @@
 		-moz-osx-font-smoothing: grayscale;
 	}
 }
-
