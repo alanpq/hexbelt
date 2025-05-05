@@ -51,7 +51,12 @@
 			<Primitive value={inner.value} />
 		</span>
 	{:else}
-		<CollapsibleS entry={{ ...entry, value: inner.value }} {tree} parent={id} />
+		<CollapsibleS
+			entry={{ ...entry, name: entry.name ?? JSON.stringify(inner.key), value: inner.value }}
+			{tree}
+			key={inner.key}
+			parent={id}
+		/>
 		<!--
 		{@const entries = entry.children}
 		<Collapsible.Root>
