@@ -43,7 +43,7 @@
 	let colorClass = $derived.by(() => {
 		const cc = containerClasses[inner.kind];
 		if (cc) return cc;
-		if (isNum) return 'text-cyan-500';
+		if (isNum || isVec) return 'text-cyan-500';
 		return null;
 	});
 </script>
@@ -72,9 +72,9 @@
 	>
 		{#if inner.kind == 'String'}
 			<!-- "{inner.value}" -->
-			<Input value={inner.value} />
+			<Input value={inner.value} autocomplete="off" />
 		{:else if isNum}
-			<Input value={inner.value} />
+			<Input value={inner.value} autocomplete="off" />
 		{:else if inner.kind == 'Bool' || inner.kind == 'BitBool'}
 			<Checkbox value={inner.value} />
 		{:else if inner.kind == 'Hash'}
@@ -87,7 +87,8 @@
 			{#each inner.value as i}
 				<Input
 					type="text"
-					class="overflow-clip text-ellipsis px-1.5 font-mono text-cyan-300"
+					class="overflow-clip text-ellipsis font-mono"
+					autocomplete="off"
 					value={i.toString().length < 4 ? i.toPrecision(4) : i}
 				/>
 			{/each}
