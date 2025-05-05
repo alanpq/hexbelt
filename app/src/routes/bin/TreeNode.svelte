@@ -37,7 +37,6 @@
 				}}
 			>
 				<Icon />
-				<Folder class="mr-1" />
 				{name}
 				{#if entries.length > 1}
 					<span class="text-right text-sm tracking-tighter text-muted-foreground">
@@ -48,6 +47,7 @@
 			<span
 				class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
 			>
+				<Folder class="mr-1 size-4" />
 				Namespace
 			</span>
 		{/if}
