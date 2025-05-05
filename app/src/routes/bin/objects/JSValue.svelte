@@ -55,7 +55,7 @@
 	</span>
 	<span
 		class={cn(
-			'grid h-full grid-flow-col items-center gap-2 px-1 py-0.5 transition-colors',
+			'grid h-full grid-flow-col items-center gap-1 px-1 py-0.5 transition-colors',
 			// !isVec && 'hover:bg-card',
 			colorClass
 		)}
