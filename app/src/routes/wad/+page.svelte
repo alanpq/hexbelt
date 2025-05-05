@@ -31,11 +31,14 @@
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
 
-	import { Item, open_wad } from '$lib/pkg/rust';
+	import { Bin, Item, open_wad } from '$lib/pkg/rust';
 	import FileDrop from '$lib/components/FileDrop.svelte';
 	import DropOverlay from '$lib/components/DropOverlay.svelte';
+	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let ctx = context.wad.get();
+	let bin_ctx = context.bin.get();
 	let opening = $state(false);
 
 	const file_icons: Record<any, Component> = {
@@ -209,6 +212,25 @@
 								>
 									<Download class="size-4" /> Download
 								</ContextMenu.Item>
+								{#if ext == 'bin'}
+									<ContextMenu.Separator />
+									<ContextMenu.Item
+										class="flex gap-2"
+										onclick={() => {
+											const data = load_chunk(item.id);
+											if (!data) return;
+											try {
+												bin_ctx.bin = Bin.from_bytes(data);
+											} catch (e) {
+												console.error(e);
+												toast.error(`${e}`);
+											}
+											goto(base + '/bin');
+										}}
+									>
+										<Table2 class="size-4" /> Open in Bin Explorer
+									</ContextMenu.Item>
+								{/if}
 							</ContextMenu.Content>
 						</ContextMenu.Root>
 					</li>
