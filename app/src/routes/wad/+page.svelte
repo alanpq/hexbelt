@@ -32,8 +32,11 @@
 	import { toast } from 'svelte-sonner';
 
 	import { Item, open_wad } from '$lib/pkg/rust';
+	import FileDrop from '$lib/components/FileDrop.svelte';
+	import DropOverlay from '$lib/components/DropOverlay.svelte';
 
 	let ctx = context.wad.get();
+	let opening = $state(false);
 
 	const file_icons: Record<any, Component> = {
 		anm: SendToBack,
@@ -70,6 +73,21 @@
 		link.href = url;
 		link.download = item.name;
 		link.click();
+	};
+
+	const onFiles = async (files: FileList) => {
+		opening = true;
+		try {
+			ctx.wad = null;
+			ctx.wad = await open_wad(files[0]);
+			if (!ctx.wad) throw new Error('failed to open wad');
+			console.log(Array.from(ctx.wad.children).map((i) => ctx.wad?.get(i)));
+			ctx.path = [];
+		} catch (e) {
+			console.error('failed to open wad: ', e);
+			toast.error(`Failed to open Wad! ${e}`);
+		}
+		opening = false;
 	};
 
 	const previewable = new Set(['dds', 'jpg', 'png', 'tex', 'svg']);
@@ -113,100 +131,89 @@
 	{/if}
 </header>
 
-{#if !ctx.wad}
-	<div class="flex flex-grow" out:fade={{ duration: 100 }}>
-		<DropZone
-			class="m-5 flex-grow"
-			onFiles={async (files) => {
-				try {
-					ctx.wad = null;
-					ctx.wad = await open_wad(files[0]);
-					if (!ctx.wad) throw new Error('failed to open wad');
-					console.log(Array.from(ctx.wad.children).map((i) => ctx.wad?.get(i)));
-					ctx.path = [];
-				} catch (e) {
-					console.error('failed to open wad: ', e);
-					toast.error(`Failed to open Wad! ${e}`);
-				}
-			}}
-		>
+{#if !ctx.wad && !opening}
+	<div class="flex flex-grow" in:fade={{ delay: 100, duration: 100 }} out:fade={{ duration: 100 }}>
+		<DropZone class="m-5 flex-grow" {onFiles}>
 			<h2>No file open.</h2>
 			<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
 			<Button>Upload<Upload /></Button>
 		</DropZone>
 	</div>
 {:else}
-	<section class="mt-5 flex-grow">
-		<ul
-			in:fade={{ delay: 100, duration: 100 }}
-			class="grid grid-cols-[min-content,1fr] items-center gap-x-2"
-		>
-			<li class="contents">
-				<TableEntry
-					directory
-					disabled={ctx.path.length == 0}
-					onclick={() => {
-						ctx.path.splice(-1);
-					}}
-					class="cursor-pointer"
-				>
-					<Undo2 class="size-4" />
-					...
-				</TableEntry>
-			</li>
-			{#each view as item}
-				{@const is_dir = item.is_dir()}
-				{@const ext = item.name.split('.').at(-1)}
-				{@const Icon = (ext !== undefined && file_icons[ext]) || (is_dir ? Folder : FileIcon)}
+	<DropOverlay {onFiles}>
+		<section class="mt-5 flex-grow">
+			<ul
+				in:fade={{ delay: 100, duration: 100 }}
+				out:fade={{ duration: 100 }}
+				class="grid grid-cols-[min-content,1fr] items-center gap-x-2"
+			>
 				<li class="contents">
-					<ContextMenu.Root
-						onOpenChange={(open) => {
-							if (!open) return;
-							ctx.selected = item.id;
+					<TableEntry
+						directory
+						disabled={ctx.path.length == 0}
+						onclick={() => {
+							ctx.path.splice(-1);
 						}}
+						class="cursor-pointer"
 					>
-						<ContextMenu.Trigger>
-							{#snippet child({ props })}
-								<TableEntry
-									{...props}
-									selected={item.id === ctx.selected}
-									directory={is_dir}
+						<Undo2 class="size-4" />
+						...
+					</TableEntry>
+				</li>
+				{#each view as item}
+					{@const is_dir = item.is_dir()}
+					{@const ext = item.name.split('.').at(-1)}
+					{@const Icon = (ext !== undefined && file_icons[ext]) || (is_dir ? Folder : FileIcon)}
+					<li class="contents">
+						<ContextMenu.Root
+							onOpenChange={(open) => {
+								if (!open) return;
+								ctx.selected = item.id;
+							}}
+						>
+							<ContextMenu.Trigger>
+								{#snippet child({ props })}
+									<TableEntry
+										{...props}
+										selected={item.id === ctx.selected}
+										directory={is_dir}
+										onclick={() => {
+											ctx.selected = item.id;
+										}}
+										ondblclick={() => {
+											if (is_dir) {
+												ctx.path.push(item.id);
+											}
+										}}
+									>
+										<Icon class="size-4" />
+										{item.name}
+									</TableEntry>
+								{/snippet}
+							</ContextMenu.Trigger>
+							<ContextMenu.Content>
+								<!-- TODO: file previews -->
+								<ContextMenu.Item
+									class="flex gap-2"
+									disabled={is_dir || !ext || !previewable.has(ext)}
+								>
+									<Eye class="size-4" /> Preview
+								</ContextMenu.Item>
+								<!-- TODO: folder downloading -->
+								<ContextMenu.Item
+									class="flex gap-2"
+									disabled={is_dir}
 									onclick={() => {
-										ctx.selected = item.id;
-									}}
-									ondblclick={() => {
-										if (is_dir) {
-											ctx.path.push(item.id);
-										}
+										download(item);
 									}}
 								>
-									<Icon class="size-4" />
-									{item.name}
-								</TableEntry>
-							{/snippet}
-						</ContextMenu.Trigger>
-						<ContextMenu.Content>
-							<!-- TODO: file previews -->
-							<ContextMenu.Item
-								class="flex gap-2"
-								disabled={is_dir || !ext || !previewable.has(ext)}
-							>
-								<Eye class="size-4" /> Preview
-							</ContextMenu.Item>
-							<!-- TODO: folder downloading -->
-							<ContextMenu.Item
-								class="flex gap-2"
-								disabled={is_dir}
-								onclick={() => {
-									download(item);
-								}}
-							>
-								<Download class="size-4" /> Download
-							</ContextMenu.Item>
-						</ContextMenu.Content>
-					</ContextMenu.Root>
-				</li>
-			{/each}
-		</ul>
-	</section>
+									<Download class="size-4" /> Download
+								</ContextMenu.Item>
+							</ContextMenu.Content>
+						</ContextMenu.Root>
+					</li>
+				{/each}
+			</ul>
+		</section>
+	</DropOverlay>
 {/if}
