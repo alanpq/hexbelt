@@ -16,7 +16,7 @@
 		Upload
 	} from '@lucide/svelte';
 
-	import FileDrop from '$lib/components/FileDrop.svelte';
+	import DropZone from '$lib/components/DropZone.svelte';
 	import TableEntry from './TableEntry.svelte';
 
 	import { Button } from '$lib/components/ui/button';
@@ -84,7 +84,7 @@
 	});
 </script>
 
-<header class="flex flex-row gap-4 items-center">
+<header class="flex flex-row items-center gap-4">
 	<Sidebar.Trigger />
 	{#if ctx.wad}
 		<Breadcrumb.Root>
@@ -115,7 +115,7 @@
 
 {#if !ctx.wad}
 	<div class="flex flex-grow" out:fade={{ duration: 100 }}>
-		<FileDrop
+		<DropZone
 			class="m-5 flex-grow"
 			onFiles={async (files) => {
 				try {
@@ -133,7 +133,7 @@
 			<h2>No file open.</h2>
 			<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
 			<Button>Upload<Upload /></Button>
-		</FileDrop>
+		</DropZone>
 	</div>
 {:else}
 	<section class="mt-5 flex-grow">

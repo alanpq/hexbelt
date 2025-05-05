@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FileDrop from '$lib/components/FileDrop.svelte';
+	import DropZone from '$lib/components/DropZone.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Upload } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
@@ -15,7 +15,7 @@
 
 {#if !(root !== undefined && ctx.bin !== null)}
 	<div class="flex flex-grow" out:fade={{ duration: 100 }}>
-		<FileDrop
+		<DropZone
 			class="m-5 flex-grow"
 			onFiles={async (files) => {
 				ctx.bin = await open_bin(files[0]);
@@ -24,7 +24,7 @@
 			<h2>No file open.</h2>
 			<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
 			<Button>Upload<Upload /></Button>
-		</FileDrop>
+		</DropZone>
 	</div>
 {:else}
 	<section class="" in:fade={{ delay: 100, duration: 100 }}>
