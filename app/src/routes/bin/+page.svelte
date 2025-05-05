@@ -20,6 +20,7 @@
 		opening = true;
 		ctx.bin = null;
 		ctx.bin = await open_bin(files[0]);
+		console.debug({ bin: ctx.bin });
 		opening = false;
 	};
 </script>
@@ -36,7 +37,7 @@
 {:else}
 	<section in:fade={{ delay: 100, duration: 100 }} class="flex-grow">
 		<DropOverlay {onFiles}>
-			<ul class="grid grid-cols-[max-content_10ch_1fr] items-center">
+			<ul class="grid grid-cols-[max-content_max-content_1fr] items-center">
 				<li
 					class="col-span-full grid grid-cols-subgrid items-center gap-4 pb-1 pt-[1px] text-sm font-bold"
 				>

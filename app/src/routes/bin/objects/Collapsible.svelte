@@ -48,7 +48,6 @@
 			}}
 		>
 			<CollapseIcon />
-			<KindIcon class="mr-1" />
 			{entry.name}
 			{#if entries.length > 1}
 				<span class="text-right text-sm tracking-tighter text-muted-foreground">
@@ -57,7 +56,10 @@
 			{/if}
 		</Button>
 		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card">
-			{entry.value.kind.replace('Property', '')}
+			<KindIcon class="mr-1 size-4" />
+			{'value' in entry.value && 'className' in entry.value.value && entry.value.value.className
+				? entry.value.value.className
+				: entry.value.kind.replace('Property', '')}
 		</span>
 	{/if}
 	{#if expanded}

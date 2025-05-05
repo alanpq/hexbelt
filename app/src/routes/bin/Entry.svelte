@@ -20,8 +20,8 @@
 		PropertyOptional: objects.Optional,
 		PropertyContainer: objects.Collapsible,
 		PropertyUnorderedContainer: objects.Collapsible,
-		PropertyMap: undefined,
-		PropertyMapEntry: undefined,
+		PropertyMap: objects.Collapsible,
+		PropertyMapEntry: objects.MapEntry,
 		PropertyStruct: objects.Collapsible,
 		PropertyEmbedded: objects.Collapsible
 	};
