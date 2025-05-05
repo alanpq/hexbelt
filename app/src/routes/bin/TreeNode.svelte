@@ -44,14 +44,14 @@
 		{#if parent !== undefined}
 			<Button
 				variant="ghost"
-				class="flex flex-row justify-start p-1 px-2 text-left"
+				class="flex flex-row justify-start gap-1 p-1 px-2 pl-1 text-left"
 				onclick={() => {
 					if (expanded) ctx.expanded.delete(id);
 					else ctx.expanded.add(id);
 				}}
 			>
 				<Icon />
-				<Folder />
+				<Folder class="mr-1" />
 				{name}
 			</Button>
 			<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
@@ -61,7 +61,7 @@
 		{#if expanded}
 			<ul
 				class={cn(
-					'col-span-full row-span-1 ml-2 grid grid-cols-subgrid',
+					'col-span-full row-span-1 ml-2.5 grid grid-cols-subgrid',
 					entries.length > 1 && 'border-l'
 				)}
 			>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import type { Data, TreeNode, BinEntryValue, BinEntry } from '$lib/pkg/rust';
-	import { ChevronDown, ChevronRight, Folder } from '@lucide/svelte';
+	import { Boxes, ChevronDown, ChevronRight, Folder, ListOrdered, List } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
 
 	import * as context from '$lib/context';
@@ -22,7 +22,16 @@
 	let expanded = $derived(
 		(parent === undefined || ctx.expanded.has(id)) && entry.children.length > 0
 	);
-	let Icon = $derived(expanded ? ChevronDown : ChevronRight);
+	let CollapseIcon = $derived(expanded ? ChevronDown : ChevronRight);
+
+	const kindIcons: { [K in BinEntryValue['kind']]?: Component } = {
+		PropertyStruct: Boxes,
+		PropertyEmbedded: Boxes,
+		PropertyContainer: ListOrdered,
+		PropertyUnorderedContainer: List
+	};
+
+	let KindIcon = $derived(kindIcons[entry.value.kind] ?? Folder);
 
 	let entries = entry.children;
 </script>
@@ -31,15 +40,15 @@
 	{#if parent !== undefined}
 		<Button
 			variant="ghost"
-			class="flex flex-row justify-start p-1 px-2 text-left"
+			class="flex flex-row justify-start gap-1 p-1 px-2 pl-1 text-left"
 			disabled={entry.children.length == 0}
 			onclick={() => {
 				if (expanded) ctx.expanded.delete(id);
 				else ctx.expanded.add(id);
 			}}
 		>
-			<Icon />
-			<Folder />
+			<CollapseIcon />
+			<KindIcon class="mr-1" />
 			{entry.name}
 		</Button>
 		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
@@ -49,7 +58,7 @@
 	{#if expanded}
 		<ul
 			class={cn(
-				'col-span-full row-span-1 ml-2 grid grid-cols-subgrid',
+				'col-span-full row-span-1 ml-2.5 grid grid-cols-subgrid',
 				entries.length > 1 && 'border-l'
 			)}
 		>
