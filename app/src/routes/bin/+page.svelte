@@ -1,6 +1,8 @@
 <script lang="ts">
 	import DropZone from '$lib/components/DropZone.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import * as Sidebar from '$lib/components/ui/sidebar';
+
 	import { Upload } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
 
@@ -14,6 +16,7 @@
 </script>
 
 {#if !(root !== undefined && ctx.bin !== null)}
+	<Sidebar.Trigger />
 	<div class="flex flex-grow" out:fade={{ duration: 100 }}>
 		<DropZone
 			class="m-5 flex-grow"
@@ -29,8 +32,13 @@
 {:else}
 	<section class="" in:fade={{ delay: 100, duration: 100 }}>
 		<ul class="grid grid-cols-[max-content_10ch_1fr] items-center">
-			<li class="col-span-full grid grid-cols-subgrid items-center p-1 px-2">
-				<h2>Key</h2>
+			<li
+				class="col-span-full grid grid-cols-subgrid items-center gap-4 pb-1 pt-[1px] text-sm font-bold"
+			>
+				<h2 class="flex items-center">
+					<Sidebar.Trigger class="-mt-[1px]" />
+					<span class="pl-2"> Key </span>
+				</h2>
 				<h2>Type</h2>
 				<h2>Value</h2>
 			</li>
