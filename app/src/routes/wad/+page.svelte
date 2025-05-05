@@ -145,7 +145,7 @@
 			<ul
 				in:fade={{ delay: 100, duration: 100 }}
 				out:fade={{ duration: 100 }}
-				class="grid grid-cols-[min-content,1fr] items-center gap-x-2"
+				class="grid grid-cols-[min-content,minmax(0,1fr)] items-center gap-x-2"
 			>
 				<li class="contents">
 					<TableEntry
@@ -187,7 +187,7 @@
 										}}
 									>
 										<Icon class="size-4" />
-										{item.name}
+										<span class="truncate"> {item.name}</span>
 									</TableEntry>
 								{/snippet}
 							</ContextMenu.Trigger>
