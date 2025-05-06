@@ -57,7 +57,5 @@
 <Toaster richColors />
 <Sidebar.Provider>
 	<AppSidebar />
-	<main class="flex w-full flex-col p-5">
-		{@render children?.()}
-	</main>
+	{@render children?.()}
 </Sidebar.Provider>

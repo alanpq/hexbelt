@@ -105,137 +105,143 @@
 	});
 </script>
 
-<header class="flex flex-row items-center gap-4">
-	<Sidebar.Trigger />
-	{#if ctx.wad}
-		<Breadcrumb.Root>
-			<Breadcrumb.List>
-				<Breadcrumb.Item>
-					<Breadcrumb.Link
-						class="cursor-pointer"
-						onclick={() => {
-							ctx.path = [];
-						}}>/</Breadcrumb.Link
-					>
-				</Breadcrumb.Item>
-				{#each ctx.path as path, i}
-					<Breadcrumb.Separator />
+<main class="flex w-full flex-col p-5">
+	<header class="flex flex-row items-center gap-4">
+		<Sidebar.Trigger />
+		{#if ctx.wad}
+			<Breadcrumb.Root>
+				<Breadcrumb.List>
 					<Breadcrumb.Item>
 						<Breadcrumb.Link
 							class="cursor-pointer"
 							onclick={() => {
-								ctx.path.splice(i + 1);
-							}}>{ctx.wad.get(path)?.name}</Breadcrumb.Link
+								ctx.path = [];
+							}}>/</Breadcrumb.Link
 						>
 					</Breadcrumb.Item>
-				{/each}
-			</Breadcrumb.List>
-		</Breadcrumb.Root>
-	{/if}
-</header>
+					{#each ctx.path as path, i}
+						<Breadcrumb.Separator />
+						<Breadcrumb.Item>
+							<Breadcrumb.Link
+								class="cursor-pointer"
+								onclick={() => {
+									ctx.path.splice(i + 1);
+								}}>{ctx.wad.get(path)?.name}</Breadcrumb.Link
+							>
+						</Breadcrumb.Item>
+					{/each}
+				</Breadcrumb.List>
+			</Breadcrumb.Root>
+		{/if}
+	</header>
 
-{#if !ctx.wad && !opening}
-	<div class="flex flex-grow" in:fade={{ delay: 100, duration: 100 }} out:fade={{ duration: 100 }}>
-		<DropZone class="m-5 flex-grow" {onFiles}>
-			<h2>No file open.</h2>
-			<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
-			<Button>Upload<Upload /></Button>
-		</DropZone>
-	</div>
-{:else}
-	<DropOverlay {onFiles}>
-		<section class="mt-5 flex-grow">
-			<ul
-				in:fade={{ delay: 100, duration: 100 }}
-				out:fade={{ duration: 100 }}
-				class="grid grid-cols-[min-content,minmax(0,1fr)] items-center gap-x-2"
-			>
-				<li class="contents">
-					<TableEntry
-						directory
-						disabled={ctx.path.length == 0}
-						onclick={() => {
-							ctx.path.splice(-1);
-						}}
-						class="cursor-pointer"
-					>
-						<Undo2 class="size-4" />
-						...
-					</TableEntry>
-				</li>
-				{#each view as item}
-					{@const is_dir = item.is_dir()}
-					{@const ext = item.name.split('.').at(-1)}
-					{@const Icon = (ext !== undefined && file_icons[ext]) || (is_dir ? Folder : FileIcon)}
+	{#if !ctx.wad && !opening}
+		<div
+			class="flex flex-grow"
+			in:fade={{ delay: 100, duration: 100 }}
+			out:fade={{ duration: 100 }}
+		>
+			<DropZone class="m-5 flex-grow" {onFiles}>
+				<h2>No file open.</h2>
+				<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
+				<Button>Upload<Upload /></Button>
+			</DropZone>
+		</div>
+	{:else}
+		<DropOverlay {onFiles}>
+			<section class="mt-5 flex-grow">
+				<ul
+					in:fade={{ delay: 100, duration: 100 }}
+					out:fade={{ duration: 100 }}
+					class="grid grid-cols-[min-content,minmax(0,1fr)] items-center gap-x-2"
+				>
 					<li class="contents">
-						<ContextMenu.Root
-							onOpenChange={(open) => {
-								if (!open) return;
-								ctx.selected = item.id;
+						<TableEntry
+							directory
+							disabled={ctx.path.length == 0}
+							onclick={() => {
+								ctx.path.splice(-1);
 							}}
+							class="cursor-pointer"
 						>
-							<ContextMenu.Trigger>
-								{#snippet child({ props })}
-									<TableEntry
-										{...props}
-										selected={item.id === ctx.selected}
-										directory={is_dir}
-										onclick={() => {
-											ctx.selected = item.id;
-										}}
-										ondblclick={() => {
-											if (is_dir) {
-												ctx.path.push(item.id);
-											}
-										}}
-									>
-										<Icon class="size-4" />
-										<span class="truncate"> {item.name}</span>
-									</TableEntry>
-								{/snippet}
-							</ContextMenu.Trigger>
-							<ContextMenu.Content>
-								<!-- TODO: file previews -->
-								<ContextMenu.Item
-									class="flex gap-2"
-									disabled={is_dir || !ext || !previewable.has(ext)}
-								>
-									<Eye class="size-4" /> Preview
-								</ContextMenu.Item>
-								<!-- TODO: folder downloading -->
-								<ContextMenu.Item
-									class="flex gap-2"
-									disabled={is_dir}
-									onclick={() => {
-										download(item);
-									}}
-								>
-									<Download class="size-4" /> Download
-								</ContextMenu.Item>
-								{#if ext == 'bin'}
-									<ContextMenu.Separator />
+							<Undo2 class="size-4" />
+							...
+						</TableEntry>
+					</li>
+					{#each view as item}
+						{@const is_dir = item.is_dir()}
+						{@const ext = item.name.split('.').at(-1)}
+						{@const Icon = (ext !== undefined && file_icons[ext]) || (is_dir ? Folder : FileIcon)}
+						<li class="contents">
+							<ContextMenu.Root
+								onOpenChange={(open) => {
+									if (!open) return;
+									ctx.selected = item.id;
+								}}
+							>
+								<ContextMenu.Trigger>
+									{#snippet child({ props })}
+										<TableEntry
+											{...props}
+											selected={item.id === ctx.selected}
+											directory={is_dir}
+											onclick={() => {
+												ctx.selected = item.id;
+											}}
+											ondblclick={() => {
+												if (is_dir) {
+													ctx.path.push(item.id);
+												}
+											}}
+										>
+											<Icon class="size-4" />
+											<span class="truncate"> {item.name}</span>
+										</TableEntry>
+									{/snippet}
+								</ContextMenu.Trigger>
+								<ContextMenu.Content>
+									<!-- TODO: file previews -->
 									<ContextMenu.Item
 										class="flex gap-2"
+										disabled={is_dir || !ext || !previewable.has(ext)}
+									>
+										<Eye class="size-4" /> Preview
+									</ContextMenu.Item>
+									<!-- TODO: folder downloading -->
+									<ContextMenu.Item
+										class="flex gap-2"
+										disabled={is_dir}
 										onclick={() => {
-											const data = load_chunk(item.id);
-											if (!data) return;
-											try {
-												bin_ctx.bin = Bin.from_bytes(data);
-											} catch (e) {
-												console.error(e);
-												toast.error(`${e}`);
-											}
-											goto(base + '/bin');
+											download(item);
 										}}
 									>
-										<Table2 class="size-4" /> Open in Bin Explorer
+										<Download class="size-4" /> Download
 									</ContextMenu.Item>
-								{/if}
-							</ContextMenu.Content>
-						</ContextMenu.Root>
-					</li>
-				{/each}
-			</ul>
-		</section>
-	</DropOverlay>
-{/if}
+									{#if ext == 'bin'}
+										<ContextMenu.Separator />
+										<ContextMenu.Item
+											class="flex gap-2"
+											onclick={() => {
+												const data = load_chunk(item.id);
+												if (!data) return;
+												try {
+													bin_ctx.bin = Bin.from_bytes(data);
+												} catch (e) {
+													console.error(e);
+													toast.error(`${e}`);
+												}
+												goto(base + '/bin');
+											}}
+										>
+											<Table2 class="size-4" /> Open in Bin Explorer
+										</ContextMenu.Item>
+									{/if}
+								</ContextMenu.Content>
+							</ContextMenu.Root>
+						</li>
+					{/each}
+				</ul>
+			</section>
+		</DropOverlay>
+	{/if}
+</main>
