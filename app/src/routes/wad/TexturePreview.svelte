@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { decode_texture, type Texture } from '$lib/pkg/rust';
+	import { decode_texture } from '$lib/pkg/rust';
 	import { cn } from '$lib/utils';
 	import { Slider } from '$lib/components/ui/slider';
 	import { useDebounce } from 'runed';
