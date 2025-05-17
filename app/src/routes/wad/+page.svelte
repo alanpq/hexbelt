@@ -43,6 +43,7 @@
 	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 
 	let ctx = context.wad.get();
 	let bin_ctx = context.bin.get();
@@ -138,7 +139,11 @@
 			{onLayoutChange}
 			class="h-full w-full items-stretch"
 		>
-			<Resizable.Pane defaultSize={defaultLayout[0]} minSize={10} class="flex w-full flex-col p-5">
+			<Resizable.Pane
+				defaultSize={defaultLayout[0]}
+				minSize={10}
+				class="flex w-full flex-col p-5 pr-2"
+			>
 				<header class="flex flex-row items-center gap-4">
 					<Sidebar.Trigger />
 					{#if ctx.wad}
@@ -181,7 +186,7 @@
 						</DropZone>
 					</div>
 				{:else}
-					<section class="mt-5 flex-grow">
+					<ScrollArea class="mt-5 flex-grow pr-4">
 						<ul
 							in:fade={{ delay: 100, duration: 100 }}
 							out:fade={{ duration: 100 }}
@@ -278,7 +283,7 @@
 								</li>
 							{/each}
 						</ul>
-					</section>
+					</ScrollArea>
 				{/if}
 			</Resizable.Pane>
 			{#if inspectorOpen}
