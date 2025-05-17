@@ -14,9 +14,18 @@
 
 	let { children } = $props();
 
-	let wad: ReturnType<typeof context.wad.get> = $state({ wad: null, path: [], selected: null });
+	let wad: ReturnType<typeof context.wad.get> = $state({
+		wad: null,
+		path: [],
+		selected: null,
+		opening: false
+	});
 	context.wad.set(wad);
-	let bin: ReturnType<typeof context.bin.get> = $state({ bin: null, expanded: new SvelteSet() });
+	let bin: ReturnType<typeof context.bin.get> = $state({
+		bin: null,
+		expanded: new SvelteSet(),
+		opening: false
+	});
 	context.bin.set(bin);
 
 	const hashtables = $state({
