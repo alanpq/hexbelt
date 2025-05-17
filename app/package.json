@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite dev",
-        "build": "vite build",
+        "build": "yarn wasm && vite build",
         "modulize-wasm": "node ../rust/modulize.mjs",
         "wasm": "wasm-pack build ../rust --target web && yarn modulize-wasm",
         "wasm:dev": "wasm-pack build --dev --no-opt ../rust --target web && yarn modulize-wasm",
