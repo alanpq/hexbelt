@@ -13,7 +13,8 @@
 		Table2,
 		Undo2,
 		Image as ImageIcon,
-		Upload
+		Upload,
+		X
 	} from '@lucide/svelte';
 
 	import DropZone from '$lib/components/DropZone.svelte';
@@ -25,6 +26,8 @@
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import TooltipContent from '$lib/components/ui/tooltip/tooltip-content.svelte';
+
+	import Inspector from './Inspector.svelte';
 
 	import * as context from '$lib/context';
 	import { previewableExtensions } from '$lib/consts';
@@ -40,7 +43,6 @@
 	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
-	import Inspector from './Inspector.svelte';
 
 	let ctx = context.wad.get();
 	let bin_ctx = context.bin.get();
@@ -109,9 +111,11 @@
 			.filter((c) => !!c);
 	});
 
-	let defaultLayout = (browser ? JSON.parse(localStorage.getItem('layout') || '0') : null) || [
-		265, 440
-	];
+	let defaultLayout = (() => {
+		let sizes = (browser ? JSON.parse(localStorage.getItem('layout') || '0') : null) || [265, 440];
+		if (!sizes[1] || sizes[1] < 5) sizes[1] = 440;
+		return sizes;
+	})();
 	let inspectorOpen = $state(browser ? !!localStorage.getItem('wad_inspector') : true);
 	const onLayoutChange = (sizes: number[]) => {
 		if (!browser) return;
@@ -127,14 +131,14 @@
 	};
 </script>
 
-<main class="w-full p-5">
-	<DropOverlay {onFiles} disabled={!browserOpen} innerClass="flex w-full flex-col">
+<main class="w-full">
+	<DropOverlay {onFiles} disabled={!browserOpen} innerClass="" overlayClass="m-5">
 		<Resizable.PaneGroup
 			direction="horizontal"
 			{onLayoutChange}
 			class="h-full w-full items-stretch"
 		>
-			<Resizable.Pane defaultSize={defaultLayout[0]} minSize={10} class="pr-5">
+			<Resizable.Pane defaultSize={defaultLayout[0]} minSize={10} class="flex w-full flex-col p-5">
 				<header class="flex flex-row items-center gap-4">
 					<Sidebar.Trigger />
 					{#if ctx.wad}
@@ -235,6 +239,7 @@
 												disabled={is_dir || !ext || !previewableExtensions.has(ext)}
 												onclick={() => {
 													inspectorOpen = true;
+													onExpand();
 												}}
 											>
 												<Eye class="size-4" /> Preview
@@ -287,6 +292,18 @@
 					{onCollapse}
 					{onExpand}
 				>
+					<header class="flex flex-row p-5">
+						<span class="flex-grow"></span>
+						<Button
+							variant="ghost"
+							size="icon"
+							class="size-7"
+							onclick={() => {
+								inspectorOpen = false;
+								onCollapse();
+							}}><X /></Button
+						>
+					</header>
 					<Inspector />
 				</Resizable.Pane>
 			{/if}
