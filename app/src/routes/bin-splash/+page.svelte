@@ -48,7 +48,6 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import AccordionContent from '$lib/components/ui/accordion/accordion-content.svelte';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-	import SmallColor from './SmallColor.svelte';
 	import LargeColor from './LargeColor.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -237,16 +236,15 @@
 																		const set = ctx.selected.get(selectedKey) ?? new SvelteSet();
 																		val ? set.add(name) : set.delete(name);
 																		ctx.selected.set(selectedKey, set);
-																		console.log({ selected: ctx.selected });
 																	}}
 																/>
 																<span class="place-self-stretch truncate pl-2">
 																	{name}
 																</span>
-																<SmallColor />
-																<SmallColor />
-																<SmallColor />
-																<SmallColor color={emitter.birthColor} />
+																<LargeColor />
+																<LargeColor />
+																<LargeColor colo={emitter.lingerColor} />
+																<LargeColor color={emitter.birthColor} />
 																<LargeColor color={emitter.color} />
 															</li>
 														{/each}
