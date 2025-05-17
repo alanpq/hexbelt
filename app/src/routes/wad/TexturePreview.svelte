@@ -80,7 +80,7 @@
 		{#if max_mips > 0}
 			<Slider
 				type="single"
-				class="col-span-2 mx-auto my-1 mb-3 w-[calc(100%-2em)]"
+				class="col-span-2 mx-auto my-1 mb-3 max-w-[calc(100%-2em)]"
 				min={0}
 				max={max_mips}
 				step={1}
