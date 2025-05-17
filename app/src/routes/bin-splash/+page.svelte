@@ -73,14 +73,16 @@
 				};
 			};
 		};
-	} = $derived.by(() => {
-		if (!root || !ctx.bin) return {};
+	} = $state({});
+
+	$effect(() => {
+		if (!root || !ctx.bin) return;
 
 		try {
 			assert(Node.isNamespace(root), 'Invalid root');
 			const chars = root.value[1]['Characters'];
 			assert(Node.isNamespace(chars), "'Characters' namespace not found");
-			const champs: typeof characters = Object.fromEntries(
+			characters = Object.fromEntries(
 				Object.values(chars.value[1]).map((character) => {
 					assert(Node.isNamespace(character), `Character '${character.value[0]}' not a namespace`);
 					const skins = character.value[1]['Skins'];
@@ -149,13 +151,10 @@
 					];
 				})
 			);
-			console.log({ champs });
-			return champs;
 		} catch (e) {
 			console.log('Could not find particle defs:', e);
 			toast.error(`Could not find particle definitions:\n${e}`);
 		}
-		return {};
 	});
 </script>
 
