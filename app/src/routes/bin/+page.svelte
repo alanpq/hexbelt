@@ -9,6 +9,7 @@
 	import * as context from '$lib/context';
 	import TreeNode from './TreeNode.svelte';
 	import DropOverlay from '$lib/components/DropOverlay.svelte';
+	import UploadButton from '$lib/components/UploadButton.svelte';
 
 	let ctx = context.bin.get();
 
@@ -27,7 +28,7 @@
 			<DropZone class="m-5 flex-grow" {onFiles}>
 				<h2>No file open.</h2>
 				<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
-				<Button>Upload<Upload /></Button>
+				<UploadButton {onFiles} />
 			</DropZone>
 		</div>
 	</main>
