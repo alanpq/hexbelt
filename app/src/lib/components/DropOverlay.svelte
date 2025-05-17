@@ -8,6 +8,7 @@
 	let {
 		class: className,
 		innerClass,
+		overlayClass,
 		disabled = false,
 		children,
 		overlay,
@@ -16,6 +17,7 @@
 	}: HTMLAttributes<HTMLElement> & {
 		disabled?: boolean;
 		innerClass?: string;
+		overlayClass?: string;
 		onFiles?: (files: DataTransfer['files']) => void;
 		overlay?: Snippet;
 	} = $props();
@@ -35,7 +37,7 @@
 					class={cn(
 						'pointer-events-none absolute inset-0 flex select-none flex-col items-center justify-center gap-2 rounded border border-dashed border-muted-foreground/30 bg-card/80 p-3 text-center transition-colors',
 						hover && '',
-						className
+						overlayClass
 					)}
 				>
 					{#if overlay}
