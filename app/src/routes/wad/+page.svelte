@@ -226,7 +226,6 @@
 											{/snippet}
 										</ContextMenu.Trigger>
 										<ContextMenu.Content>
-											<!-- TODO: file previews -->
 											<ContextMenu.Item
 												class="flex gap-2"
 												disabled={is_dir || !ext || !previewableExtensions.has(ext)}
