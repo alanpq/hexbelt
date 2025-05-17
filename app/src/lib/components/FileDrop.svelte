@@ -4,7 +4,7 @@
 
 	let {
 		class: className,
-    disabled = false,
+		disabled = false,
 		children,
 		child,
 		hover = $bindable(false),
@@ -12,13 +12,18 @@
 		...restProps
 	}: HTMLAttributes<HTMLElement> & {
 		onFiles?: (files: DataTransfer['files']) => void;
-    disabled?: boolean;
+		disabled?: boolean;
 		hover?: boolean;
 		child?: Snippet<[{ props: typeof listeners }]>;
 	} = $props();
 
 	let listeners = {
-		ondragenter: () => {
+		ondragenter: (e: DragEvent) => {
+			if (
+				!e.dataTransfer ||
+				Array.from(e.dataTransfer.items).find((item) => item.kind === 'file') === undefined
+			)
+				return;
 			hover = true && !disabled;
 		},
 		ondragexit: () => {
