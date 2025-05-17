@@ -50,15 +50,16 @@
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import SmallColor from './SmallColor.svelte';
 	import LargeColor from './LargeColor.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
-	let ctx = context.bin.get();
+	let ctx = context.binsplash.get();
 	let root = $derived(ctx.bin?.data.tree);
 	$inspect(root);
 
 	let browserOpen = $derived((ctx.bin && root) || ctx.opening);
 
 	const onFiles = async (files: FileList) => {
-		context.openBin(ctx, files);
+		context.openBinsplash(ctx, files);
 	};
 
 	let characters: {
@@ -197,14 +198,26 @@
 							</Tabs.List>
 							{#each skins as [skin, particles_obj]}
 								{@const particles = Object.entries(particles_obj)}
-								<Tabs.Content value={skin} class="">
+								<Tabs.Content value={skin}>
 									<Accordion.Root type="multiple" value={particles.map((p) => p[0])}>
 										{#each particles as [particle, emitters_obj]}
 											{@const emitters = Object.entries(emitters_obj)}
+											{@const selectedKey = `${character}/${skin}/${particle}`}
+											{@const emitterSelected = ctx.selected.get(selectedKey)?.size ?? 0}
 											<Accordion.Item value={particle}>
 												<Accordion.Trigger class="h-6 py-5">
 													<span class="flex flex-row gap-2">
 														<Checkbox
+															checked={emitterSelected == emitters.length}
+															indeterminate={emitterSelected > 0 &&
+																emitterSelected < emitters.length}
+															onCheckedChange={(val) => {
+																const set = ctx.selected.get(selectedKey) ?? new SvelteSet();
+																for (const [emitter, _] of emitters) {
+																	val ? set.add(emitter) : set.delete(emitter);
+																}
+																ctx.selected.set(selectedKey, set);
+															}}
 															onclick={(e) => {
 																e.stopPropagation();
 															}}
@@ -218,7 +231,15 @@
 													>
 														{#each emitters as [name, emitter]}
 															<li class="col-span-full grid grid-cols-subgrid place-items-center">
-																<Checkbox />
+																<Checkbox
+																	checked={ctx.selected.get(selectedKey)?.has(name)}
+																	onCheckedChange={(val) => {
+																		const set = ctx.selected.get(selectedKey) ?? new SvelteSet();
+																		val ? set.add(name) : set.delete(name);
+																		ctx.selected.set(selectedKey, set);
+																		console.log({ selected: ctx.selected });
+																	}}
+																/>
 																<span class="place-self-stretch truncate pl-2">
 																	{name}
 																</span>

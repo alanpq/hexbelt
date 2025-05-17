@@ -1,6 +1,6 @@
 import { Context } from 'runed';
 import { type WadTree, type Bin, open_wad, open_bin } from '$lib/pkg/rust';
-import type { SvelteSet } from 'svelte/reactivity';
+import type { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { toast } from 'svelte-sonner';
 
 export const hashtables_ready = new Context<{ wad: boolean; bin: boolean }>('hashtables_ready');
@@ -20,6 +20,13 @@ export const bin = new Context<{
 }>('bin');
 export type BinContext = ReturnType<typeof bin.get>;
 
+export const binsplash = new Context<{
+	bin: Bin | null;
+	selected: SvelteMap<string, SvelteSet<string>>;
+	opening: boolean | null;
+}>('binsplash');
+export type BinSplashContext = ReturnType<typeof binsplash.get>;
+
 export const openWad = async (ctx: WadContext, files: FileList) => {
 	ctx.opening = true;
 	try {
@@ -36,6 +43,13 @@ export const openWad = async (ctx: WadContext, files: FileList) => {
 };
 
 export const openBin = async (ctx: BinContext, files: FileList) => {
+	ctx.opening = true;
+	ctx.bin = null;
+	ctx.bin = await open_bin(files[0]);
+	ctx.opening = false;
+};
+
+export const openBinsplash = async (ctx: BinSplashContext, files: FileList) => {
 	ctx.opening = true;
 	ctx.bin = null;
 	ctx.bin = await open_bin(files[0]);

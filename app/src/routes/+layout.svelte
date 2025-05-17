@@ -10,7 +10,7 @@
 	import { base } from '$app/paths';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import * as context from '$lib/context';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	let { children } = $props();
 
@@ -27,6 +27,12 @@
 		opening: false
 	});
 	context.bin.set(bin);
+	let binsplash: context.BinSplashContext = $state({
+		bin: null,
+		selected: new SvelteMap(),
+		opening: false
+	});
+	context.binsplash.set(binsplash);
 
 	const hashtables = $state({
 		bin: false,
