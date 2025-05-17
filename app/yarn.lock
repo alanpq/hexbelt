@@ -310,10 +310,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@lucide/svelte@^0.507.0":
-  version "0.507.0"
-  resolved "https://registry.yarnpkg.com/@lucide/svelte/-/svelte-0.507.0.tgz#00dab3a0a1811cec60b39d2471a1da3e6aae068e"
-  integrity sha512-kXIg/2IHEo1bAwZG94fjA9O6+E3Sv5aQrW2yyPf4JvCYIUIF8DGLIQI4vfjoUyNq2dEX4cI33pZarzGOHr0npg==
+"@lucide/svelte@^0.511.0":
+  version "0.511.0"
+  resolved "https://registry.yarnpkg.com/@lucide/svelte/-/svelte-0.511.0.tgz#943d7c487f157b863570d89ee2de88b69fdc71cb"
+  integrity sha512-aLCSPMUJmHlCuLXzXENXa4Z1NV2mN1iAZAFKk4bEbey+/MdsNlu+/DqwVkgW3Yvj6p8y8Vn5xZ2v9CLmPlA6Vw==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -716,10 +716,10 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-bits-ui@^1.4.6:
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-1.4.6.tgz#9f4ae7d40b5d0652674700396cb9f25d36a1b5b3"
-  integrity sha512-EN2niBF9iBe03GzSJ64I369DA/pRdoC7sCKVAqIxMkxrk/ClfDurzNJkf4RMK6EFOxeqWzTVFJTGyPdmBAy6Lw==
+bits-ui@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-1.4.8.tgz#3c6cbc51ffb3e225a411b56b0cba84dfda2645e5"
+  integrity sha512-j34GsdSsJ+ZBl9h/70VkufvrlEgTKQSZvm80eM5VvuhLJWvpfEpn9+k0FVmtDQl9NSPgEVtI9imYhm8nW9Nj/w==
   dependencies:
     "@floating-ui/core" "^1.6.4"
     "@floating-ui/dom" "^1.6.7"
@@ -1570,6 +1570,14 @@ package-json-from-dist@^1.0.0:
   resolved "https://registry.yarnpkg.com/package-json-from-dist/-/package-json-from-dist-1.0.1.tgz#4f1471a010827a86f94cfd9b0727e36d267de505"
   integrity sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==
 
+paneforge@^1.0.0-next.5:
+  version "1.0.0-next.5"
+  resolved "https://registry.yarnpkg.com/paneforge/-/paneforge-1.0.0-next.5.tgz#e89e4c4166c6a60cb1339a63e9d38e0f38e841bd"
+  integrity sha512-1ArDM+GMEO+o6pixEAFobhTkWkyxUDdHyw2bKruvQIXBStJmdRP7HoV4jNBZ/2i9UHDzmczxJzA3D2tKa91phw==
+  dependencies:
+    runed "^0.23.4"
+    svelte-toolbelt "^0.7.1"
+
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/parent-module/-/parent-module-1.0.1.tgz#691d2709e78c79fae3a156622452d00762caaaa2"
@@ -1808,7 +1816,7 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-runed@^0.23.2:
+runed@^0.23.2, runed@^0.23.4:
   version "0.23.4"
   resolved "https://registry.yarnpkg.com/runed/-/runed-0.23.4.tgz#0b68fd24434e65dd8cbd9f7072521d6f5f409eba"
   integrity sha512-9q8oUiBYeXIDLWNK5DfCWlkL0EW3oGbk845VdKlPeia28l751VpfesaB/+7pI6rnbx1I6rqoZ2fZxptOJLxILA==
