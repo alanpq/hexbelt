@@ -1,55 +1,63 @@
 <script lang="ts">
-  import * as stores from "$lib/stores";
+	import DropZone from '$lib/components/DropZone.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as Sidebar from '$lib/components/ui/sidebar';
 
-  import { Bin, open_bin, type BinEntry, type TreeNode } from "$lib/pkg/rust";
-  import { toast } from "svelte-sonner";
+	import { Upload } from '@lucide/svelte';
+	import { fade } from 'svelte/transition';
 
-  import FilePicker from "$lib/components/FilePicker.svelte";
-  import Table from "./Table.svelte";
-  import { writable } from "svelte/store";
+	import * as context from '$lib/context';
+	import { open_bin } from '$lib/pkg/rust';
+	import TreeNode from './TreeNode.svelte';
+	import DropOverlay from '$lib/components/DropOverlay.svelte';
 
-  let loaded = stores.bin_hashtables();
+	let ctx = context.bin.get();
 
-  let bin = stores.bin();
+	let root = $derived(ctx.bin?.data.tree);
+	let opening = $state(false);
 
-  let data = writable<BinEntry[]>([]);
-
-  const make_entry = (bin: Bin, node: TreeNode): BinEntry => {
-    if (node.kind == "Namespace") {
-      return {
-        name: node.value[0],
-        value: { kind: "Namespace" },
-        children: Object.entries(node.value[1])
-          .sort((a, b) => {
-            return a[0].localeCompare(b[0]);
-          })
-          .map(([_, n]) => {
-            return make_entry(bin, n);
-          }),
-      };
-    }
-    const entry = bin.data.objects[node.value[1]];
-    return entry;
-  };
-
-  $: $bin && data.set(make_entry($bin, $bin.data.tree).children);
+	const onFiles = async (files: FileList) => {
+		opening = true;
+		ctx.bin = null;
+		ctx.bin = await open_bin(files[0]);
+		console.debug({ bin: ctx.bin });
+		opening = false;
+	};
 </script>
 
-<header>
-  <FilePicker
-    class="flex-shrink w-min"
-    disabled={!$loaded}
-    on:open={async ({ detail: files }) => {
-      try {
-        $bin = await open_bin(files[0]);
-        console.log({ bin });
-      } catch (e) {
-        console.error(e);
-        toast.error(`${e}`);
-      }
-    }}>Open Bin</FilePicker
-  >
-</header>
-{#if $bin}
-  <Table bin={$bin} {data} />
+{#if (root === undefined || ctx.bin === null) && !opening}
+	<main class="flex w-full flex-col p-5" out:fade={{ duration: 100 }}>
+		<Sidebar.Trigger />
+		<div class="flex flex-grow">
+			<DropZone class="m-5 flex-grow" {onFiles}>
+				<h2>No file open.</h2>
+				<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
+				<Button>Upload<Upload /></Button>
+			</DropZone>
+		</div>
+	</main>
+{:else}
+	<main class="flex w-full flex-col p-5 pr-0" in:fade={{ delay: 100, duration: 100 }}>
+		<section class="flex-grow">
+			<DropOverlay {onFiles} class="mr-5 flex">
+				<ul
+					class="grid max-h-full grid-cols-[max-content_max-content_1fr] grid-rows-[max-content_minmax(0,1fr)] items-center pr-5"
+				>
+					<li
+						class="col-span-full grid grid-cols-subgrid items-center gap-4 pb-1 pt-[1px] text-sm font-bold shadow-background"
+					>
+						<h2 class="flex items-center">
+							<Sidebar.Trigger class="-mt-[1px]" />
+							<span class="pl-2"> Key </span>
+						</h2>
+						<h2>Type</h2>
+						<h2>Value</h2>
+					</li>
+					{#if ctx.bin && root}
+						<TreeNode node={root} tree={ctx.bin.data} class="max-h-full overflow-y-auto" />
+					{/if}
+				</ul>
+			</DropOverlay>
+		</section>
+	</main>
 {/if}

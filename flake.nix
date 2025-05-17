@@ -58,6 +58,8 @@
           svelte-language-server
           tailwindcss-language-server
 
+          prettierd
+
           rustToolchain.${pkgs.system}
           rust-analyzer-unwrapped
           cargo
