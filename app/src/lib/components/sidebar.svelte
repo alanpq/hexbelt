@@ -9,6 +9,7 @@
 	import { hashtables_ready } from '$lib/context';
 	import { fade } from 'svelte/transition';
 	import type { Component } from 'svelte';
+	import { base } from '$app/paths';
 
 	const hashtables = hashtables_ready.get();
 
@@ -73,7 +74,7 @@
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
 								{#snippet child({ props })}
-									<a href={item.url} {...props}>
+									<a href={base + item.url} {...props}>
 										<item.icon />
 										<span class="flex-grow">{item.title}</span>
 										{#if item.spinner !== undefined && !hashtables[item.spinner]}
