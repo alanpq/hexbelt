@@ -2,9 +2,20 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import DropZone from '$lib/components/DropZone.svelte';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Upload } from '@lucide/svelte';
+	import UploadButton from '$lib/components/UploadButton.svelte';
+	import * as context from '$lib/context';
+
+	const wadCtx = context.wad.get();
+	const openWad = (files: FileList) => {
+		context.openWad(wadCtx, files);
+		goto(`${base}/wad`);
+	};
+	const binCtx = context.bin.get();
+	const openBin = (files: FileList) => {
+		context.openBin(binCtx, files);
+		goto(`${base}/bin`);
+	};
 </script>
 
 <article class="m-auto grid w-full max-w-[50ch] grid-cols-2 gap-4">
@@ -18,14 +29,9 @@
 			<Card.Description>Open & extract from .wad files</Card.Description>
 		</Card.Header>
 		<span class="flex-grow"></span>
-		<DropZone
-			class="m-5"
-			onFiles={(files) => {
-				goto(`${base}/wad`);
-			}}
-		>
-			<p class="text-sm text-muted-foreground">Upload or drop a file</p>
-			<Button size="icon"><Upload /></Button>
+		<DropZone class="m-5" onFiles={openWad}>
+			<p class="text-sm text-muted-foreground">Drop a file or</p>
+			<UploadButton onFiles={openWad} />
 		</DropZone>
 	</Card.Root>
 	<Card.Root class="flex flex-col">
@@ -34,14 +40,9 @@
 			<Card.Description>Browse .bin fields</Card.Description>
 		</Card.Header>
 		<span class="flex-grow"></span>
-		<DropZone
-			class="m-5"
-			onFiles={(files) => {
-				goto(`${base}/bin`);
-			}}
-		>
-			<p class="text-sm text-muted-foreground">Upload or drop a file</p>
-			<Button size="icon"><Upload /></Button>
+		<DropZone class="m-5" onFiles={openBin}>
+			<p class="text-sm text-muted-foreground">Drop a file or</p>
+			<UploadButton onFiles={openBin} />
 		</DropZone>
 	</Card.Root>
 	<p class="col-span-2 text-center text-sm text-muted-foreground">& more to come :3</p>

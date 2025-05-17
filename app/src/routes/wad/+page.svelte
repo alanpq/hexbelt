@@ -13,7 +13,6 @@
 		Table2,
 		Undo2,
 		Image as ImageIcon,
-		Upload,
 		X
 	} from '@lucide/svelte';
 
@@ -25,7 +24,6 @@
 	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import * as Resizable from '$lib/components/ui/resizable';
-	import TooltipContent from '$lib/components/ui/tooltip/tooltip-content.svelte';
 
 	import Inspector from './Inspector.svelte';
 
@@ -36,14 +34,15 @@
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
 
-	import { Bin, Item, open_wad } from '$lib/pkg/rust';
-	import FileDrop from '$lib/components/FileDrop.svelte';
+	import { Bin, Item } from '$lib/pkg/rust';
 	import DropOverlay from '$lib/components/DropOverlay.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
+	import UploadButton from '$lib/components/UploadButton.svelte';
+	import { openWad } from '$lib/context';
 
 	let ctx = context.wad.get();
 	let bin_ctx = context.bin.get();
@@ -89,18 +88,7 @@
 	};
 
 	const onFiles = async (files: FileList) => {
-		opening = true;
-		try {
-			ctx.wad = null;
-			ctx.wad = await open_wad(files[0]);
-			if (!ctx.wad) throw new Error('failed to open wad');
-			console.log(Array.from(ctx.wad.children).map((i) => ctx.wad?.get(i)));
-			ctx.path = [];
-		} catch (e) {
-			console.error('failed to open wad: ', e);
-			toast.error(`Failed to open Wad! ${e}`);
-		}
-		opening = false;
+		openWad(ctx, files);
 	};
 
 	let view = $derived.by(() => {
@@ -182,7 +170,7 @@
 						<DropZone class="m-5 flex-grow" {onFiles}>
 							<h2>No file open.</h2>
 							<p class="text-sm text-muted-foreground">Drag and drop a file or</p>
-							<Button>Upload<Upload /></Button>
+							<UploadButton {onFiles} />
 						</DropZone>
 					</div>
 				{:else}
@@ -286,7 +274,7 @@
 					</ScrollArea>
 				{/if}
 			</Resizable.Pane>
-			{#if inspectorOpen}
+			{#if inspectorOpen && browserOpen}
 				<Resizable.Handle withHandle />
 				<Resizable.Pane
 					class={cn('')}

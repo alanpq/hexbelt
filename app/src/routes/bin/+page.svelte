@@ -7,7 +7,6 @@
 	import { fade } from 'svelte/transition';
 
 	import * as context from '$lib/context';
-	import { open_bin } from '$lib/pkg/rust';
 	import TreeNode from './TreeNode.svelte';
 	import DropOverlay from '$lib/components/DropOverlay.svelte';
 
@@ -17,11 +16,7 @@
 	let opening = $state(false);
 
 	const onFiles = async (files: FileList) => {
-		opening = true;
-		ctx.bin = null;
-		ctx.bin = await open_bin(files[0]);
-		console.debug({ bin: ctx.bin });
-		opening = false;
+		context.openBin(ctx, files);
 	};
 </script>
 
