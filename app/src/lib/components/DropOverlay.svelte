@@ -7,11 +7,15 @@
 	import { Upload } from '@lucide/svelte';
 	let {
 		class: className,
+		innerClass,
+		disabled = false,
 		children,
 		overlay,
 		onFiles,
 		...restProps
 	}: HTMLAttributes<HTMLElement> & {
+		disabled?: boolean;
+		innerClass?: string;
 		onFiles?: (files: DataTransfer['files']) => void;
 		overlay?: Snippet;
 	} = $props();
@@ -19,10 +23,10 @@
 	let hover = $state(false);
 </script>
 
-<FileDrop {onFiles} bind:hover>
+<FileDrop {onFiles} {disabled} bind:hover>
 	{#snippet child({ props })}
 		<div {...props} {...restProps} class={cn('relative size-full', className)}>
-			<div class={cn('absolute inset-0', hover && 'pointer-events-none')}>
+			<div class={cn('absolute inset-0', hover && 'pointer-events-none', innerClass)}>
 				{@render children?.()}
 			</div>
 			{#if hover}
