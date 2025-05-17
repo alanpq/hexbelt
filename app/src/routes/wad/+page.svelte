@@ -27,6 +27,7 @@
 	import TooltipContent from '$lib/components/ui/tooltip/tooltip-content.svelte';
 
 	import * as context from '$lib/context';
+	import { previewableExtensions } from '$lib/consts';
 
 	import type { Component } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -39,6 +40,7 @@
 	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
+	import Inspector from './Inspector.svelte';
 
 	let ctx = context.wad.get();
 	let bin_ctx = context.bin.get();
@@ -98,8 +100,6 @@
 		opening = false;
 	};
 
-	const previewable = new Set(['dds', 'jpg', 'png', 'tex', 'svg']);
-
 	let view = $derived.by(() => {
 		if (!ctx.wad) return [];
 		return Array.from(
@@ -112,23 +112,18 @@
 	let defaultLayout = (browser ? JSON.parse(localStorage.getItem('layout') || '0') : null) || [
 		265, 440
 	];
-	let inspectorOpen = $state(false);
-	let isCollapsed = $state(browser ? !!localStorage.getItem('wad_inspector') : true);
+	let inspectorOpen = $state(browser ? !!localStorage.getItem('wad_inspector') : true);
 	const onLayoutChange = (sizes: number[]) => {
 		if (!browser) return;
 		localStorage.setItem('layout', JSON.stringify(sizes));
 	};
 	const onCollapse = () => {
-		isCollapsed = true;
-		if (browser) localStorage.setItem('wad_inspector', '1');
-	};
-	const onExpand = () => {
-		isCollapsed = false;
+		inspectorOpen = false;
 		if (browser) localStorage.removeItem('wad_inspector');
 	};
-	const onResize = (size: number, prevSize?: number) => {
-		console.log({ size, prevSize });
-		if (size < 5) inspectorOpen = false;
+	const onExpand = () => {
+		inspectorOpen = true;
+		if (browser) localStorage.setItem('wad_inspector', '1');
 	};
 </script>
 
@@ -139,7 +134,7 @@
 			{onLayoutChange}
 			class="h-full w-full items-stretch"
 		>
-			<Resizable.Pane defaultSize={defaultLayout[0]} minSize={10}>
+			<Resizable.Pane defaultSize={defaultLayout[0]} minSize={10} class="pr-5">
 				<header class="flex flex-row items-center gap-4">
 					<Sidebar.Trigger />
 					{#if ctx.wad}
@@ -237,7 +232,7 @@
 											<!-- TODO: file previews -->
 											<ContextMenu.Item
 												class="flex gap-2"
-												disabled={is_dir || !ext || !previewable.has(ext)}
+												disabled={is_dir || !ext || !previewableExtensions.has(ext)}
 												onclick={() => {
 													inspectorOpen = true;
 												}}
@@ -284,16 +279,15 @@
 			{#if inspectorOpen}
 				<Resizable.Handle withHandle />
 				<Resizable.Pane
-					class={cn('', isCollapsed && 'max-w-max')}
+					class={cn('')}
 					defaultSize={defaultLayout[1]}
 					minSize={5}
 					collapsible
-					collapsedSize={0}
-					{onResize}
+					collapsedSize={1}
 					{onCollapse}
 					{onExpand}
 				>
-					inspector
+					<Inspector />
 				</Resizable.Pane>
 			{/if}
 		</Resizable.PaneGroup>
