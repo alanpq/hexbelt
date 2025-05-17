@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import DropZone from '$lib/components/DropZone.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -20,7 +21,7 @@
 		<DropZone
 			class="m-5"
 			onFiles={(files) => {
-				goto('/wad');
+				goto(`${base}/wad`);
 			}}
 		>
 			<p class="text-sm text-muted-foreground">Upload or drop a file</p>
@@ -36,7 +37,7 @@
 		<DropZone
 			class="m-5"
 			onFiles={(files) => {
-				goto('/bin');
+				goto(`${base}/bin`);
 			}}
 		>
 			<p class="text-sm text-muted-foreground">Upload or drop a file</p>
