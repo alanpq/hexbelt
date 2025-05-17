@@ -18,6 +18,7 @@
 	import { cn } from '$lib/utils';
 	import Entry from '../Entry.svelte';
 	import Primitive from './Primitive.svelte';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 
 	let {
 		tree,
@@ -100,12 +101,26 @@
 				{/if}
 			</Button>
 		{/if}
-		<span class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card">
-			<KindIcon class="mr-1 size-4" />
-			{'value' in entry.value && 'className' in entry.value.value && entry.value.value.className
-				? entry.value.value.className
-				: entry.value.kind.replace('Property', '')}
-		</span>
+		<Tooltip.Root>
+			<Tooltip.Trigger disabled={!('value' in entry.value && 'class' in entry.value.value)}>
+				{#snippet child({ props })}
+					<span
+						{...props}
+						class="flex h-full items-center p-1 px-2 text-sm text-muted-foreground/50 hover:bg-card"
+					>
+						<KindIcon class="mr-1 size-4" />
+						{'value' in entry.value &&
+						'className' in entry.value.value &&
+						entry.value.value.className
+							? entry.value.value.className
+							: entry.value.kind.replace('Property', '')}
+					</span>
+				{/snippet}
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				{'value' in entry.value && 'class' in entry.value.value ? entry.value.value.class : ''}
+			</Tooltip.Content>
+		</Tooltip.Root>
 	{/if}
 	{#if expanded}
 		<ul

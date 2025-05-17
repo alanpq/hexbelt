@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PackageOpen, House, Table2, Sun, Moon, LoaderCircle } from '@lucide/svelte';
+	import { PackageOpen, House, Table2, Sun, Moon, LoaderCircle, Paintbrush } from '@lucide/svelte';
 	import { toggleMode } from 'mode-watcher';
 
 	import { page } from '$app/state';
@@ -35,7 +35,8 @@
 			url: '/bin',
 			icon: Table2,
 			spinner: 'bin'
-		}
+		},
+		{ title: 'Bin Splash', url: '/bin-splash', icon: Paintbrush, spinner: 'bin' }
 	];
 </script>
 
