@@ -69,6 +69,8 @@
 						color?: ValueColor;
 						birthColor?: ValueColor;
 						lingerColor?: ValueColor;
+						fresnelColor?: ValueColor;
+						reflectionFresnelColor?: ValueColor;
 					};
 				};
 			};
@@ -98,7 +100,7 @@
 								return [
 									skin.value[0],
 									Object.fromEntries(
-										Object.values(particles.value[1]).map((particle) => {
+										Object.values(particles.value[1]).map((particle, i) => {
 											assert(
 												!Node.isNamespace(particle),
 												`Particle '${particle.value[0]} is a namespace`
@@ -109,10 +111,10 @@
 												(child) => child.name === 'complexEmitterDefinitionData'
 											);
 											assert(
-												children.length == 1,
-												'>1 complexEmitterDefinitionData found in one particle definition!'
+												children.length <= 1,
+												`${children.length} complexEmitterDefinitionData found in ${skin.value[0]}/${particle.value[0]}/${i}!`
 											);
-											const emitters = children[0].children;
+											const emitters = children[0]?.children ?? [];
 											console.log({ emitters });
 											return [
 												particle.value[0],
@@ -137,7 +139,12 @@
 																color: children.color && parseColor(children.color),
 																birthColor: children.birthColor && parseColor(children.birthColor),
 																lingerColor:
-																	children.lingerColor && parseColor(children.lingerColor)
+																	children.lingerColor && parseColor(children.lingerColor),
+																fresnelColor:
+																	children.fresnelColor && parseColor(children.fresnelColor),
+																reflectionFresnelColor:
+																	children.reflectionFresnelColor &&
+																	parseColor(children.reflectionFresnelColor)
 															}
 														];
 													})
@@ -173,7 +180,7 @@
 	{@const chars = Object.entries(characters)}
 	<main class="flex w-full flex-col p-5" in:fade={{ delay: 100, duration: 100 }}>
 		<DropOverlay {onFiles} class="flex">
-			<Tabs.Root value={chars[0]?.[0]} class="">
+			<Tabs.Root value={chars[0]?.[0]} class="flex h-full flex-col">
 				<Tabs.List
 					class="grid w-full"
 					style={`grid-template-columns: repeat(${chars.length},1fr);`}
@@ -185,76 +192,97 @@
 				{#each chars as [character, skins_obj]}
 					{@const skins = Object.entries(skins_obj)}
 					<Tabs.Content value={character}>
-						<Tabs.Root value={skins[0]?.[0]}>
-							<Tabs.List
-								class="grid w-full"
-								style={`grid-template-columns: repeat(${skins.length},1fr);`}
-							>
-								{#each skins as [skin, _]}
-									<Tabs.Trigger value={skin}>{skin}</Tabs.Trigger>
-								{/each}
-							</Tabs.List>
-							{#each skins as [skin, particles_obj]}
-								{@const particles = Object.entries(particles_obj)}
-								<Tabs.Content value={skin}>
-									<Accordion.Root type="multiple" value={particles.map((p) => p[0])}>
-										{#each particles as [particle, emitters_obj]}
-											{@const emitters = Object.entries(emitters_obj)}
-											{@const selectedKey = `${character}/${skin}/${particle}`}
-											{@const emitterSelected = ctx.selected.get(selectedKey)?.size ?? 0}
-											<Accordion.Item value={particle}>
-												<Accordion.Trigger class="h-6 py-5">
-													<span class="flex flex-row gap-2">
-														<Checkbox
-															checked={emitterSelected == emitters.length}
-															indeterminate={emitterSelected > 0 &&
-																emitterSelected < emitters.length}
-															onCheckedChange={(val) => {
-																const set = ctx.selected.get(selectedKey) ?? new SvelteSet();
-																for (const [emitter, _] of emitters) {
-																	val ? set.add(emitter) : set.delete(emitter);
-																}
-																ctx.selected.set(selectedKey, set);
-															}}
-															onclick={(e) => {
-																e.stopPropagation();
-															}}
-														/>
-														{particle}
-													</span>
-												</Accordion.Trigger>
-												<Accordion.Content>
-													<ul
-														class="grid grid-cols-[max-content,minmax(10ch,1fr),repeat(4,minmax(1em,5em)),minmax(4em,15em)] gap-1 pl-2"
-													>
-														{#each emitters as [name, emitter]}
-															<li class="col-span-full grid grid-cols-subgrid place-items-center">
-																<Checkbox
-																	checked={ctx.selected.get(selectedKey)?.has(name)}
-																	onCheckedChange={(val) => {
-																		const set = ctx.selected.get(selectedKey) ?? new SvelteSet();
-																		val ? set.add(name) : set.delete(name);
-																		ctx.selected.set(selectedKey, set);
-																	}}
-																/>
-																<span class="place-self-stretch truncate pl-2">
-																	{name}
+						{#snippet child({ props })}
+							<Tabs.Root {...props} value={skins[0]?.[0]} class="flex h-full flex-grow flex-col">
+								<Tabs.List
+									class="grid w-full"
+									style={`grid-template-columns: repeat(${skins.length},1fr);`}
+								>
+									{#each skins as [skin, _]}
+										<Tabs.Trigger value={skin}>{skin}</Tabs.Trigger>
+									{/each}
+								</Tabs.List>
+								{#each skins as [skin, particles_obj]}
+									{@const particles = Object.entries(particles_obj)}
+									<Tabs.Content value={skin}>
+										{#snippet child({ props })}
+											<header
+												{...props}
+												class="mt-2 grid grid-cols-[max-content,minmax(10ch,1fr),repeat(4,minmax(1em,5em)),minmax(4em,15em)] place-items-center gap-1 text-sm font-bold"
+											>
+												<Checkbox />
+												<span class="place-self-stretch truncate pl-2">Emitter</span>
+												<span>OC</span>
+												<span>RC</span>
+												<span>LC</span>
+												<span>BC</span>
+												<span>Main</span>
+											</header>
+											<ScrollArea class="flex-grow">
+												<Accordion.Root type="multiple" value={particles.map((p) => p[0])}>
+													{#each particles as [particle, emitters_obj]}
+														{@const emitters = Object.entries(emitters_obj)}
+														{@const selectedKey = `${character}/${skin}/${particle}`}
+														{@const emitterSelected = ctx.selected.get(selectedKey)?.size ?? 0}
+														<Accordion.Item value={particle}>
+															<Accordion.Trigger class="h-6 py-5">
+																<span class="flex flex-row gap-2">
+																	<Checkbox
+																		checked={emitterSelected == emitters.length}
+																		indeterminate={emitterSelected > 0 &&
+																			emitterSelected < emitters.length}
+																		onCheckedChange={(val) => {
+																			const set = ctx.selected.get(selectedKey) ?? new SvelteSet();
+																			for (const [emitter, _] of emitters) {
+																				val ? set.add(emitter) : set.delete(emitter);
+																			}
+																			ctx.selected.set(selectedKey, set);
+																		}}
+																		onclick={(e) => {
+																			e.stopPropagation();
+																		}}
+																	/>
+																	{particle}
 																</span>
-																<LargeColor />
-																<LargeColor />
-																<LargeColor colo={emitter.lingerColor} />
-																<LargeColor color={emitter.birthColor} />
-																<LargeColor color={emitter.color} />
-															</li>
-														{/each}
-													</ul>
-												</Accordion.Content>
-											</Accordion.Item>
-										{/each}
-									</Accordion.Root>
-								</Tabs.Content>
-							{/each}
-						</Tabs.Root>
+															</Accordion.Trigger>
+															<Accordion.Content>
+																<ul
+																	class="grid grid-cols-[max-content,minmax(10ch,1fr),repeat(4,minmax(1em,5em)),minmax(4em,15em)] gap-1 pl-2"
+																>
+																	{#each emitters as [name, emitter]}
+																		<li
+																			class="col-span-full grid grid-cols-subgrid place-items-center"
+																		>
+																			<Checkbox
+																				checked={ctx.selected.get(selectedKey)?.has(name)}
+																				onCheckedChange={(val) => {
+																					const set =
+																						ctx.selected.get(selectedKey) ?? new SvelteSet();
+																					val ? set.add(name) : set.delete(name);
+																					ctx.selected.set(selectedKey, set);
+																				}}
+																			/>
+																			<span class="place-self-stretch truncate pl-2">
+																				{name}
+																			</span>
+																			<LargeColor color={emitter.fresnelColor} />
+																			<LargeColor color={emitter.reflectionFresnelColor} />
+																			<LargeColor color={emitter.lingerColor} />
+																			<LargeColor color={emitter.birthColor} />
+																			<LargeColor color={emitter.color} />
+																		</li>
+																	{/each}
+																</ul>
+															</Accordion.Content>
+														</Accordion.Item>
+													{/each}
+												</Accordion.Root>
+											</ScrollArea>
+										{/snippet}
+									</Tabs.Content>
+								{/each}
+							</Tabs.Root>
+						{/snippet}
 					</Tabs.Content>
 				{/each}
 			</Tabs.Root>
