@@ -29,6 +29,7 @@
 	context.bin.set(bin);
 	let binsplash: context.BinSplashContext = $state({
 		bin: null,
+		edit: { value_edits: {} },
 		selected: new SvelteMap(),
 		opening: false
 	});

@@ -10,7 +10,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::utils::AsJSError;
 
-use super::{BinEntry, TreeNode};
+use super::{BinEntry, BinEntryValue, TreeNode};
 
 #[wasm_bindgen]
 pub struct Bin {
@@ -24,6 +24,17 @@ pub struct Bin {
 pub struct Data {
     pub tree: TreeNode,
     pub objects: HashMap<u32, BinEntry>,
+}
+
+#[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
+pub struct TreeEdits {
+    value_edits: HashMap<u32, Vec<ObjectValueEdit>>,
+}
+
+#[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
+pub struct ObjectValueEdit {
+    pub path: Vec<u32>,
+    pub value: BinEntryValue,
 }
 
 #[wasm_bindgen]

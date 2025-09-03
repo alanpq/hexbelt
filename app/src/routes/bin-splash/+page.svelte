@@ -79,6 +79,7 @@
 
 	$effect(() => {
 		if (!root || !ctx.bin) return;
+		console.log({ root, objects: ctx.bin.data.objects });
 
 		try {
 			assert(Node.isNamespace(root), 'Invalid root');

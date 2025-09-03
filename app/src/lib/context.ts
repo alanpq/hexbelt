@@ -1,5 +1,5 @@
 import { Context } from 'runed';
-import { type WadTree, type Bin, open_wad, open_bin } from '$lib/pkg/rust';
+import { type WadTree, type Bin, open_wad, open_bin, type TreeEdits } from '$lib/pkg/rust';
 import type { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { toast } from 'svelte-sonner';
 
@@ -22,6 +22,7 @@ export type BinContext = ReturnType<typeof bin.get>;
 
 export const binsplash = new Context<{
 	bin: Bin | null;
+	edit: TreeEdits;
 	selected: SvelteMap<string, SvelteSet<string>>;
 	opening: boolean | null;
 }>('binsplash');
