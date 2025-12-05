@@ -1,6 +1,6 @@
 use std::io::Cursor;
 
-use league_toolkit::core::render::texture::Texture as LolTexture;
+use league_toolkit::texture::Texture as LolTexture;
 use wasm_bindgen::prelude::*;
 
 use crate::log;

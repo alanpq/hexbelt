@@ -20,7 +20,7 @@ pub trait AsJSError {
     fn as_js_error(&self) -> JsValue;
 }
 
-impl AsJSError for league_toolkit::core::meta::Error {
+impl AsJSError for league_toolkit::meta::Error {
     fn as_js_error(&self) -> JsValue {
         format!("Failed to parse bin: {self:?}").into()
     }
