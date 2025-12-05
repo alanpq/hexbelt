@@ -7,7 +7,7 @@ use std::{
 };
 use thiserror::Error;
 
-use league_toolkit::core::wad::{Wad, WadChunk, WadDecoder, WadError};
+use league_toolkit::wad::{Wad, WadChunk, WadDecoder, WadError};
 use wasm_bindgen::prelude::*;
 
 use crate::{

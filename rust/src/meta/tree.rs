@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 
 use itertools::Itertools;
-use league_toolkit::core::meta::{self, value::PropertyValueEnum, BinTree};
+use league_toolkit::meta::{self, value::PropertyValueEnum, BinTree};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tsify_next::Tsify;
