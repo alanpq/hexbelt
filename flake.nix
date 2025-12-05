@@ -1,8 +1,11 @@
 {
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
-    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -67,6 +70,9 @@
           wabt
         ];
         RUST_SRC_PATH = "${rustToolchain.${pkgs.system}}/lib/rustlib/src/rust/library";
+        CC_wasm32_unknown_unknown = "${pkgs.llvmPackages_19.clang-unwrapped}/bin/clang";
+        AR_wasm32_unknown_unknown = "${pkgs.llvmPackages_19.bintools-unwrapped}/bin/llvm-ar";
+        CFLAGS_wasm32_unknown_unknown = "-I ${pkgs.llvmPackages_19.clang-unwrapped.lib}/lib/clang/19/include";
       };
     });
     formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
