@@ -47,7 +47,9 @@
 
 		const load_hashes = async (func: typeof load_bin_hashtables, name: string) => {
 			toast.info(`Loading ${name} hashtables...`, {});
-			await func(`${base}/hashes`).then((count) => {
+			await func(
+				'https://raw.githubusercontent.com/CommunityDragon/Data/refs/heads/master/hashes/lol/'
+			).then((count) => {
 				if (count <= 0) {
 					toast.error(`${name} Hashtables were empty! Could not load any hashes.`);
 				} else if (count <= 1000) {
