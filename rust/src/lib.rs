@@ -5,6 +5,8 @@ pub mod tex;
 pub mod utils;
 pub mod wad;
 
+pub mod mesh;
+
 use hash_table::HashTable;
 pub use meta::Bin;
 use tracing_log::LogTracer;

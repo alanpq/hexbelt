@@ -1,10 +1,15 @@
 <script lang="ts">
-	import { decode_texture } from '$lib/pkg/rust';
+	import { decode_texture, Item } from '$lib/pkg/rust';
 	import { cn } from '$lib/utils';
 	import { Slider } from '$lib/components/ui/slider';
 	import { useDebounce } from 'runed';
 
-	let { name, data, mipmap = 0 }: { name?: string; data?: Uint8Array; mipmap?: number } = $props();
+	import * as context from '$lib/context';
+
+	let { item, mipmap = 0 }: { item: Item; mipmap?: number } = $props();
+
+	let ctx = context.wad.get();
+	let data = $derived(ctx.wad && ctx.wad.load_chunk_data(item.id));
 
 	let max_mips = $state(1);
 
@@ -68,7 +73,7 @@
 			class="col-span-2 col-start-1 row-span-2 row-start-1 h-full w-full object-contain"
 		></canvas>
 		<span class="col-start-1 row-start-1 h-min w-min p-1 text-white mix-blend-difference"
-			>{name ?? '??'}</span
+			>{item.name ?? '??'}</span
 		>
 		{#if !!data && has_preview === true && preview_canvas}
 			<span
