@@ -68,6 +68,7 @@
           cargo
           wasm-pack
           wabt
+          bacon
         ];
         RUST_SRC_PATH = "${rustToolchain.${pkgs.system}}/lib/rustlib/src/rust/library";
         CC_wasm32_unknown_unknown = "${pkgs.llvmPackages_19.clang-unwrapped}/bin/clang";

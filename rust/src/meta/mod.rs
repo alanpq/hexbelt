@@ -2,7 +2,10 @@ use std::collections::HashMap;
 use std::io::Cursor;
 
 use itertools::Itertools;
-use league_toolkit::meta::{self, value::PropertyValueEnum, BinTree};
+use league_toolkit::{
+    hash::BinHash,
+    meta::{self, BinTree, PropertyValueEnum},
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tsify_next::Tsify;
@@ -20,18 +23,18 @@ pub use tree::*;
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct BinObject {
     pub name: String,
-    pub path_hash: u32,
-    pub class_hash: u32,
+    pub path_hash: BinHash,
+    pub class_hash: BinHash,
     pub properties: Vec<BinProperty>,
 }
 
-impl From<meta::BinTreeObject> for BinObject {
-    fn from(value: meta::BinTreeObject) -> Self {
+impl From<meta::BinObject> for BinObject {
+    fn from(value: meta::BinObject) -> Self {
         Self {
             name: value.path_hash.to_string(),
             path_hash: value.path_hash,
             class_hash: value.class_hash,
-            properties: value.properties.into_values().map_into().collect(),
+            properties: value.properties.into_iter().map_into().collect(),
         }
     }
 }
@@ -43,11 +46,11 @@ pub struct BinProperty {
     pub value: Value,
 }
 
-impl From<meta::BinProperty> for BinProperty {
-    fn from(value: meta::BinProperty) -> Self {
+impl From<(BinHash, PropertyValueEnum)> for BinProperty {
+    fn from((name, value): (BinHash, PropertyValueEnum)) -> Self {
         Self {
-            name: value.name_hash.to_string(),
-            value: serde_json::to_value(value.value).unwrap(),
+            name: name.to_string(),
+            value: serde_json::to_value(value).unwrap(),
         }
     }
 }
@@ -79,88 +82,6 @@ pub enum BinEntryValue {
         class_name: Option<String>,
         class: String,
     },
-}
-
-impl BinEntryValue {
-    pub fn from_prop_value(value: &PropertyValueEnum) -> (Self, Option<Vec<BinEntry>>) {
-        match value {
-            PropertyValueEnum::None(_) => (BinEntryValue::PropertyNone, None),
-            PropertyValueEnum::Container(v) => (
-                BinEntryValue::PropertyContainer,
-                Some(
-                    v.items
-                        .iter()
-                        .enumerate()
-                        .map(|(idx, i)| BinEntry::from_value(Some(idx.to_string()), i))
-                        .collect(),
-                ),
-            ),
-            PropertyValueEnum::UnorderedContainer(v) => (
-                BinEntryValue::PropertyUnorderedContainer,
-                Some(
-                    v.0.items
-                        .iter()
-                        .enumerate()
-                        .map(|(idx, i)| BinEntry::from_value(Some(idx.to_string()), i))
-                        .collect(),
-                ),
-            ),
-            PropertyValueEnum::Map(v) => (
-                BinEntryValue::PropertyMap,
-                Some(
-                    v.entries
-                        .iter()
-                        .map(|(k, v)| {
-                            let value = BinEntryValue::from_prop_value(v);
-                            BinEntry {
-                                name: None,
-                                value: BinEntryValue::PropertyMapEntry {
-                                    key: Box::new(BinEntryValue::from_prop_value(&k.0).0),
-                                    value: Box::new(value.0),
-                                },
-                                children: value.1.unwrap_or_default(),
-                            }
-                        })
-                        .collect(),
-                ),
-            ),
-            PropertyValueEnum::Struct(v) => (
-                BinEntryValue::PropertyStruct {
-                    class_name: unsafe { BIN_TYPES.as_ref() }
-                        .and_then(|types| types.try_resolve_path(v.class_hash)),
-
-                    class: v.class_hash.to_string(),
-                },
-                Some(v.properties.values().map_into().collect()),
-            ),
-            PropertyValueEnum::Embedded(v) => (
-                BinEntryValue::PropertyEmbedded {
-                    class_name: unsafe { BIN_TYPES.as_ref() }
-                        .and_then(|types| types.try_resolve_path(v.0.class_hash)),
-                    class: v.0.class_hash.to_string(),
-                },
-                Some(v.0.properties.values().map_into().collect()),
-            ),
-
-            PropertyValueEnum::Optional(v) => match &v.value {
-                Some(inner) => {
-                    let (inner, children) = BinEntryValue::from_prop_value(inner);
-                    (
-                        BinEntryValue::PropertyOptional(Some(Box::new(inner))),
-                        children,
-                    )
-                }
-                None => (BinEntryValue::PropertyOptional(None), None),
-            },
-            _ => {
-                // tracing::debug!("raw js: {value:?}");
-                (
-                    BinEntryValue::PropertyJSValue(serde_json::to_value(value).unwrap()),
-                    None,
-                )
-            }
-        }
-    }
 }
 
 #[derive(Clone, Debug, Tsify, Serialize, Deserialize)]
