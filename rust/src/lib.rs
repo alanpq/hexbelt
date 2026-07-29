@@ -101,7 +101,7 @@ pub async fn open_bin(file: File) -> Result<Bin, JsValue> {
 pub async fn load_wad_hashtables(base: String) -> Result<usize, JsValue> {
     let mut table = HashTable::new();
 
-    const FILES: [&str; 3] = ["hashes.game.txt.0", "hashes.game.txt.1", "hashes.lcu.txt"];
+    const FILES: [&str; 10] = ["hashes.game.txt.0", "hashes.game.txt.1", "hashes.game.txt.2", "hashes.game.txt.3", "hashes.game.txt.4", "hashes.game.txt.5", "hashes.game.txt.6", "hashes.game.txt.7", "hashes.game.txt.8", "hashes.lcu.txt"];
     let count = table.load(base, FILES).await?;
     unsafe { WAD_HASHTABLE.replace(table) };
     Ok(count)
